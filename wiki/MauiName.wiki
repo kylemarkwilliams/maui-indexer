@@ -5,4 +5,4 @@ The topic indexing algorithm is called after the Polynesian mythological hero an
 
 Māui fished out the North Island of New Zealand (country, where the algorithm was created) with a hook made out of his jaw-bone. The logo of the algorithm depicts this fishing hook, a shape that is commonly used in traditional jewelry carving. 
 
-Hauling up the second largest New Zealand island was only one of [[http://en.wikipedia.org/wiki/M%C4%81ui_(M%C4%81ori_mythology) many Maui's exploits]. Māui's sometimes would transform himself into different kinds of birds to perform his exploits. Similarly, the Maui algorithm contains two kinds of software named after New Zealand native birds, Kea and Weka (see [InsideMaui#Software_inside_Maui InsideMaui]).
+Hauling up the second largest New Zealand island was only one of [http://en.wikipedia.org/wiki/M%C4%81ui_(M%C4%81ori_mythology) many Maui's exploits]. Māui's sometimes would transform himself into different kinds of birds to perform his exploits. Similarly, the Maui algorithm contains two kinds of software named after New Zealand native birds, Kea and Weka (see [InsideMaui#Software_inside_Maui InsideMaui]).
