@@ -3,10 +3,10 @@
 
 = Download instructions =
 
-These are (for now) just some minimal instructions on how to use Maui. 
+These are (for now) just some minimal instructions on how to use Maui: 
 
-Once downloaded, look into maui.main.Examples.java for how to use Maui. Sample data for different tasks is provided in the package.
+Once [http://code.google.com/p/maui-indexer/downloads/list downloaded], look into *maui.main.Examples.java* for examples of how to use Maui. Sample data for different tasks is provided in the package.
 
 If you download the package for the first time, make sure you download the version containing the libraries. Note that some of the libraries are not required depending on the topic indexing task.
 
-Important: If you decide working with Wikipedia data, you will first need to install  [http://wikipedia-miner.sourceforge.net/ Wikipedia Miner].
+*Important:* If you decide working with Wikipedia data, you will first need to download Wikipedia dumps and load them into mysql database as explained in the [http://wikipedia-miner.sourceforge.net/ Wikipedia Miner project].
