@@ -1,7 +1,5 @@
-#summary Explains what to do after the download.
 #labels Featured,Phase-Deploy
-
-= Download instructions =
+= Download and Installation =
 
 These are (for now) just some minimal instructions on how to use Maui: 
 
