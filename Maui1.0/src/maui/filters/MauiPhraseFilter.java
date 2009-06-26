@@ -7,34 +7,27 @@ import weka.filters.*;
 import weka.core.Capabilities.Capability;
 
 /**
- * This filter splits the text in selected string
- * attributes into phrases. The resulting
- * string attributes contain these phrases
- * separated by '\n' characters.
- *
- * Phrases are identified according to the
- * following definitions:
+ * This filter splits the text in selected string attributes into phrases. The
+ * resulting string attributes contain these phrases separated by '\n'
+ * characters.
  * 
- * A phrase is a sequence of words interrupted
- * only by sequences of whitespace characters,
- * where each sequence of whitespace characters
- * contains at most one '\n'.
- *
- * A word is a sequence of letters or digits
- * that contains at least one letter, with
- * the following exceptions:
- *
- * a) '.', '@', '_', '&', '/', '-' are allowed
- * if surrounded by letters or digits,
- *
- * b) '\'' is allowed if preceeded by a letter
- * or digit,
+ * Phrases are identified according to the following definitions:
  * 
- * c) '-', '/' are also allowed if succeeded by
- * whitespace characters followed by another
- * word. In that case the whitespace characters
- * will be deleted.
- *
+ * A phrase is a sequence of words interrupted only by sequences of whitespace
+ * characters, where each sequence of whitespace characters contains at most one
+ * '\n'.
+ * 
+ * A word is a sequence of letters or digits that contains at least one letter,
+ * with the following exceptions:
+ * 
+ * a) '.', '@', '_', '&', '/' are allowed if surrounded by letters or
+ * digits,
+ * 
+ * b) '\'' is allowed if preceeded by a letter or digit,
+ * 
+ * c) '-', '/' are also allowed if succeeded by whitespace characters followed
+ * by another word. In that case the whitespace characters will be deleted.
+ * 
  * @author Eibe Frank (eibe@cs.waikato.ac.nz)
  * @version 1.0
  */
@@ -53,9 +46,9 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 
 	/**
 	 * Returns a string describing this filter
-	 *
-	 * @return a description of the filter suitable for
-	 * displaying in the explorer/experimenter gui
+	 * 
+	 * @return a description of the filter suitable for displaying in the
+	 *         explorer/experimenter gui
 	 */
 	public String globalInfo() {
 		return "This filter splits the text contained "
@@ -64,12 +57,12 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 
 	/**
 	 * Returns an enumeration describing the available options
-	 *
+	 * 
 	 * @return an enumeration of all the available options
 	 */
-	public Enumeration listOptions() {
+	public Enumeration<Option> listOptions() {
 
-		Vector newVector = new Vector(3);
+		Vector<Option> newVector = new Vector<Option>(3);
 
 		newVector.addElement(new Option(
 				"\tSpecify list of attributes to process. First and last are valid\n"
@@ -85,9 +78,9 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 
 	/**
 	 * Returns the Capabilities of this filter.
-	 *
-	 * @return            the capabilities of this object
-	 * @see               Capabilities
+	 * 
+	 * @return the capabilities of this object
+	 * @see Capabilities
 	 */
 	public Capabilities getCapabilities() {
 		Capabilities result = super.getCapabilities();
@@ -105,20 +98,26 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 
 	/**
 	 * Parses a given list of options controlling the behaviour of this object.
-	 * Valid options are:<p>
-	 *
+	 * Valid options are:
+	 * <p>
+	 * 
 	 * -R index1,index2-index4,...<br>
 	 * Specify list of attributes to process. First and last are valid indexes.
-	 * (default none)<p>
-	 *
+	 * (default none)
+	 * <p>
+	 * 
 	 * -V<br>
-	 * Invert matching sense <p>
-	 *
+	 * Invert matching sense
+	 * <p>
+	 * 
 	 * -P<br>
-	 * Disallow internal periods <p>
-	 *
-	 * @param options the list of options as an array of strings
-	 * @exception Exception if an option is not supported
+	 * Disallow internal periods
+	 * <p>
+	 * 
+	 * @param options
+	 *            the list of options as an array of strings
+	 * @exception Exception
+	 *                if an option is not supported
 	 */
 	public void setOptions(String[] options) throws Exception {
 
@@ -137,7 +136,7 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 
 	/**
 	 * Gets the current settings of the filter.
-	 *
+	 * 
 	 * @return an array of strings suitable for passing to setOptions
 	 */
 	public String[] getOptions() {
@@ -164,11 +163,12 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 
 	/**
 	 * Sets the format of the input instances.
-	 *
-	 * @param instanceInfo an Instances object containing the input
-	 * instance structure (any instances contained in the object are
-	 * ignored - only the structure is required).
-	 * @return true if the outputFormat may be collected immediately 
+	 * 
+	 * @param instanceInfo
+	 *            an Instances object containing the input instance structure
+	 *            (any instances contained in the object are ignored - only the
+	 *            structure is required).
+	 * @return true if the outputFormat may be collected immediately
 	 */
 	public boolean setInputFormat(Instances instanceInfo) throws Exception {
 
@@ -180,15 +180,16 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 	}
 
 	/**
-	 * Input an instance for filtering. Ordinarily the instance is processed
-	 * and made available for output immediately. Some filters require all
-	 * instances be read before producing output.
-	 *
-	 * @param instance the input instance
-	 * @return true if the filtered instance may now be
-	 * collected with output().
-	 * @exception Exception if the input instance was not of the correct 
-	 * format or if there was a problem with the filtering.
+	 * Input an instance for filtering. Ordinarily the instance is processed and
+	 * made available for output immediately. Some filters require all instances
+	 * be read before producing output.
+	 * 
+	 * @param instance
+	 *            the input instance
+	 * @return true if the filtered instance may now be collected with output().
+	 * @exception Exception
+	 *                if the input instance was not of the correct format or if
+	 *                there was a problem with the filtering.
 	 */
 	public boolean input(Instance instance) throws Exception {
 
@@ -204,18 +205,19 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 	}
 
 	/**
-	 * Signify that this batch of input to the filter is finished. If
-	 * the filter requires all instances prior to filtering, output()
-	 * may now be called to retrieve the filtered instances. Any
-	 * subsequent instances filtered should be filtered based on setting
-	 * obtained from the first batch (unless the inputFormat has been
-	 * re-assigned or new options have been set). This default
-	 * implementation assumes all instance processing occurs during
+	 * Signify that this batch of input to the filter is finished. If the filter
+	 * requires all instances prior to filtering, output() may now be called to
+	 * retrieve the filtered instances. Any subsequent instances filtered should
+	 * be filtered based on setting obtained from the first batch (unless the
+	 * inputFormat has been re-assigned or new options have been set). This
+	 * default implementation assumes all instance processing occurs during
 	 * inputFormat() and input().
-	 *
+	 * 
 	 * @return true if there are instances pending output
-	 * @exception NullPointerException if no input structure has been defined,
-	 * @exception Exception if there was a problem finishing the batch.
+	 * @exception NullPointerException
+	 *                if no input structure has been defined,
+	 * @exception Exception
+	 *                if there was a problem finishing the batch.
 	 */
 	public boolean batchFinished() throws Exception {
 
@@ -228,8 +230,9 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 
 	/**
 	 * Main method for testing this class.
-	 *
-	 * @param argv should contain arguments to the filter: use -h for help
+	 * 
+	 * @param argv
+	 *            should contain arguments to the filter: use -h for help
 	 */
 	public static void main(String[] argv) {
 
@@ -244,16 +247,16 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 		}
 	}
 
-	/** 
-	 * Converts an instance by removing all non-alphanumeric characters
-	 * from its string attribute values.
+	/**
+	 * Converts an instance by removing all non-alphanumeric characters from its
+	 * string attribute values.
 	 */
 	private void convertInstance(Instance instance) throws Exception {
 
 		double[] instVals = new double[instance.numAttributes()];
 
 		for (int i = 0; i < instance.numAttributes(); i++) {
-		
+
 			if (!instance.attribute(i).isString() || instance.isMissing(i)) {
 				instVals[i] = instance.value(i);
 			} else {
@@ -263,15 +266,12 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 					instVals[i] = (double) index;
 					continue;
 				}
-				// aly: str = text of the document
-				String str = instance.stringValue(i);
-			
-				String tokenized = tokenize(str);
+				String text = instance.stringValue(i);
 
-				// aly: resultStr is the clean version of str
-				// System.out.println(resultStr.toString());
+				String tokenizedText = tokenize(text);
+
 				int index = getOutputFormat().attribute(i).addStringValue(
-						tokenized);
+						tokenizedText);
 				instVals[i] = (double) index;
 			}
 		}
@@ -280,40 +280,46 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 		push(inst);
 	}
 
-	public String tokenize(String str) {
-		StringBuffer resultStr = new StringBuffer();
+	/**
+	 * This filter splits the text in selected string attributes into phrases.
+	 * The resulting string attributes contain these phrases separated by '\n'
+	 * characters.
+	 * 
+	 * @param text
+	 * @return
+	 */
+	public String tokenize(String text) {
+		StringBuffer result = new StringBuffer();
 		int j = 0;
 		boolean phraseStart = true;
 		boolean seenNewLine = false;
 		boolean haveSeenHyphen = false;
 		boolean haveSeenSlash = false;
-		while (j < str.length()) {
+		while (j < text.length()) {
 			boolean isWord = false;
 			boolean potNumber = false;
 			int startj = j;
-			while (j < str.length()) {
-				char ch = str.charAt(j);
+			while (j < text.length()) {
+				char ch = text.charAt(j);
 				if (Character.isLetterOrDigit(ch)) {
 					potNumber = true;
-					isWord = true;
-					//aly: allowing digits as words
-					/*if (Character.isLetter(ch)) {
-					isWord = true;
+					if (Character.isLetter(ch)) {
+						isWord = true;
 					}
-					 */
 					j++;
 				} else if ((!m_DisallowInternalPeriods && (ch == '.'))
 						|| (ch == '@') || (ch == '_') || (ch == '&')
-						|| (ch == '/') || (ch == '-')) {
-					if ((j > 0) && (j + 1 < str.length())
-							&& Character.isLetterOrDigit(str.charAt(j - 1))
-							&& Character.isLetterOrDigit(str.charAt(j + 1))) {
+						|| (ch == '/') || (ch == '\'')) {
+					if ((j > 0) && (j + 1 < text.length())
+							&& Character.isLetterOrDigit(text.charAt(j - 1))
+							&& Character.isLetterOrDigit(text.charAt(j + 1))) {
 						j++;
 					} else {
 						break;
 					}
 				} else if (ch == '\'') {
-					if ((j > 0) && Character.isLetterOrDigit(str.charAt(j - 1))) {
+					if ((j > 0)
+							&& Character.isLetterOrDigit(text.charAt(j - 1))) {
 						j++;
 					} else {
 						break;
@@ -325,74 +331,75 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 			if (isWord == true) {
 				if (!phraseStart) {
 					if (haveSeenHyphen) {
-						resultStr.append(' ');
+						result.append(' ');
 					} else if (haveSeenSlash) {
-						resultStr.append('/');
+						result.append('/');
 					} else {
-						resultStr.append(' ');
+						result.append(' ');
 					}
 				}
-				resultStr.append(str.substring(startj, j));
-				if (j == str.length()) {
+				result.append(text.substring(startj, j));
+				if (j == text.length()) {
 					break;
 				}
 				phraseStart = false;
 				seenNewLine = false;
 				haveSeenHyphen = false;
 				haveSeenSlash = false;
-				if (Character.isWhitespace(str.charAt(j))) {
-					if (str.charAt(j) == '\n') {
+				if (Character.isWhitespace(text.charAt(j))) {
+					if (text.charAt(j) == '\n') {
 						seenNewLine = true;
 					}
-				} else if (str.charAt(j) == '-') {
+				} else if (text.charAt(j) == '-') {
 					haveSeenHyphen = true;
-				} else if (str.charAt(j) == '/') {
+				} else if (text.charAt(j) == '/') {
 					haveSeenSlash = true;
 				} else {
 					phraseStart = true;
-					resultStr.append('\n');
+					result.append('\n');
 				}
 				j++;
-			} else if (j == str.length()) {
+			} else if (j == text.length()) {
 				break;
-			} else if (str.charAt(j) == '\n') {
+			} else if (text.charAt(j) == '\n') {
 				if (seenNewLine) {
 					if (phraseStart == false) {
-						resultStr.append('\n');
+						result.append('\n');
 						phraseStart = true;
 					}
 				} else if (potNumber) {
 					if (phraseStart == false) {
 						phraseStart = true;
-						resultStr.append('\n');
+						result.append('\n');
 					}
 				}
 				seenNewLine = true;
 				j++;
-			} else if (Character.isWhitespace(str.charAt(j))) {
+			} else if (Character.isWhitespace(text.charAt(j))) {
 				if (potNumber) {
 					if (phraseStart == false) {
 						phraseStart = true;
-						resultStr.append('\n');
+						result.append('\n');
 					}
 				}
 				j++;
 			} else {
 				if (phraseStart == false) {
-					resultStr.append('\n');
+					result.append('\n');
 					phraseStart = true;
 				}
 				j++;
 			}
 		}
-		return resultStr.toString();
+
+		return result.toString();
 	}
 
 	/**
 	 * Returns the tip text for this property
-	 *
-	 * @return tip text for this property suitable for
-	 * displaying in the explorer/experimenter gui
+	 * 
+	 * @return tip text for this property suitable for displaying in the
+	 *         explorer/experimenter gui
 	 */
 	public String invertSelectionTipText() {
 
@@ -402,7 +409,7 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 
 	/**
 	 * Get whether the supplied columns are to be processed
-	 *
+	 * 
 	 * @return true if the supplied columns won't be processed
 	 */
 	public boolean getInvertSelection() {
@@ -411,10 +418,11 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 	}
 
 	/**
-	 * Set whether selected columns should be processed. If true the 
-	 * selected columns won't be processed.
-	 *
-	 * @param invert the new invert setting
+	 * Set whether selected columns should be processed. If true the selected
+	 * columns won't be processed.
+	 * 
+	 * @param invert
+	 *            the new invert setting
 	 */
 	public void setInvertSelection(boolean invert) {
 
@@ -423,9 +431,9 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 
 	/**
 	 * Returns the tip text for this property
-	 *
-	 * @return tip text for this property suitable for
-	 * displaying in the explorer/experimenter gui
+	 * 
+	 * @return tip text for this property suitable for displaying in the
+	 *         explorer/experimenter gui
 	 */
 	public String disallowInternalPeriodsTipText() {
 
@@ -434,7 +442,7 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 
 	/**
 	 * Get whether the supplied columns are to be processed
-	 *
+	 * 
 	 * @return true if the supplied columns won't be processed
 	 */
 	public boolean getDisallowInternalPeriods() {
@@ -443,10 +451,11 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 	}
 
 	/**
-	 * Set whether selected columns should be processed. If true the 
-	 * selected columns won't be processed.
-	 *
-	 * @param disallow the new invert setting
+	 * Set whether selected columns should be processed. If true the selected
+	 * columns won't be processed.
+	 * 
+	 * @param disallow
+	 *            the new invert setting
 	 */
 	public void setDisallowInternalPeriods(boolean disallow) {
 
@@ -455,9 +464,9 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 
 	/**
 	 * Returns the tip text for this property
-	 *
-	 * @return tip text for this property suitable for
-	 * displaying in the explorer/experimenter gui
+	 * 
+	 * @return tip text for this property suitable for displaying in the
+	 *         explorer/experimenter gui
 	 */
 	public String attributeIndicesTipText() {
 
@@ -469,7 +478,7 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 
 	/**
 	 * Get the current range selection.
-	 *
+	 * 
 	 * @return a string containing a comma separated list of ranges
 	 */
 	public String getAttributeIndices() {
@@ -479,11 +488,12 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 
 	/**
 	 * Set which attributes are to be processed
-	 *
-	 * @param rangeList a string representing the list of attributes.  Since
-	 * the string will typically come from a user, attributes are indexed from
-	 * 1. <br>
-	 * eg: first-3,5,6-last
+	 * 
+	 * @param rangeList
+	 *            a string representing the list of attributes. Since the string
+	 *            will typically come from a user, attributes are indexed from
+	 *            1. <br>
+	 *            eg: first-3,5,6-last
 	 */
 	public void setAttributeIndices(String rangeList) {
 
@@ -492,10 +502,11 @@ public class MauiPhraseFilter extends Filter implements OptionHandler {
 
 	/**
 	 * Set which attributes are to be processed
-	 *
-	 * @param attributes an array containing indexes of attributes to select.
-	 * Since the array will typically come from a program, attributes are indexed
-	 * from 0.
+	 * 
+	 * @param attributes
+	 *            an array containing indexes of attributes to select. Since the
+	 *            array will typically come from a program, attributes are
+	 *            indexed from 0.
 	 */
 	public void setAttributeIndicesArray(int[] attributes) {
 

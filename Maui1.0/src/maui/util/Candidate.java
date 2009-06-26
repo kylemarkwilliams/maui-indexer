@@ -63,7 +63,7 @@ public class Candidate {
 		
 		}
 		
-		public Candidate(String name, String fullForm, int  firstOccurrence,
+		public 	Candidate(String name, String fullForm, int  firstOccurrence,
 				Anchor anchor, double probability) {
 			
 			this.name = name;

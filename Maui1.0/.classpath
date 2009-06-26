@@ -12,6 +12,6 @@
 	<classpathentry kind="lib" path="lib/weka.jar"/>
 	<classpathentry kind="lib" path="lib/xercesImpl.jar"/>
 	<classpathentry kind="lib" path="lib/mysql-connector-java-3.1.13-bin.jar"/>
-	<classpathentry kind="lib" path="lib/wikipediaminer1.1.jar"/>
+	<classpathentry combineaccessrules="false" kind="src" path="/wikipedia-miner_1.1"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
