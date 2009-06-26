@@ -60,6 +60,9 @@ import maui.stopwords.*;
  * -e "encoding"<br>
  * Specifies encoding.<p>
  * 
+ *  -w "WikipediaDatabase@WikipediaServer" <br>
+ * Specifies wikipedia data.<p>
+ * 
  * -v "vocabulary name" <br>
  * Specifies vocabulary name (e.g. agrovoc or none).<p>
  * 
@@ -129,7 +132,7 @@ public class MauiModelBuilder implements OptionHandler {
 	private String wikipediaServer = "localhost"; 
 	
 	/** Name of the database with Wikipedia data */
-	private String wikipediaDatabase = "enwiki_20090306";
+	private String wikipediaDatabase = "database";
 	
 	/** Name of the directory with Wikipedia data in files */
 	private String wikipediaDataDirectory = null;
@@ -161,11 +164,11 @@ public class MauiModelBuilder implements OptionHandler {
 
 	/** Use basic Wikipedia features 
 	 *  Wikipedia keyphraseness & Total Wikipedia keyphraseness */
-	boolean useBasicWikipediaFeatures = true;
+	boolean useBasicWikipediaFeatures = false;
 
 	/** Use all Wikipedia features 
 	 * Inverse Wikipedia frequency & Semantic relatedness*/
-	boolean useAllWikipediaFeatures = true;
+	boolean useAllWikipediaFeatures = false;
 
 	/** Maui filter object */
 	private MauiFilter mauiFilter = null;
@@ -204,18 +207,16 @@ public class MauiModelBuilder implements OptionHandler {
 		this.wikipediaDatabase = wikipediaDatabase;
 	}
 	
-	public String getWikipediaServer() {
-		return wikipediaServer;
-	}
-
 	public void setWikipediaServer(String wikipediaServer) {
 		this.wikipediaServer = wikipediaServer;
 	}
 	
-	public String getWikipediaDataDirectory() {
-		return wikipediaDataDirectory;
+	public void setWikipedia(String wikipediaConnection) {
+		int at = wikipediaConnection.indexOf("@");
+		setWikipediaDatabase(wikipediaConnection.substring(0,at));
+		setWikipediaServer(wikipediaConnection.substring(at+1));
 	}
-
+	
 	public void setWikipediaDataDirectory(String wikipediaDataDirectory) {
 		this.wikipediaDataDirectory = wikipediaDataDirectory;
 	}
@@ -324,7 +325,7 @@ public class MauiModelBuilder implements OptionHandler {
 		this.usePositionsFeatures = usePositionsFeatures;
 	}
 
-	public void setNodeDegreeFeature(boolean useNodeDegreeFeatures) {
+	public void setNodeDegreeFeature(boolean useNodeDegreeFeature) {
 		this.useNodeDegreeFeature = useNodeDegreeFeature;
 	}
 
@@ -361,6 +362,9 @@ public class MauiModelBuilder implements OptionHandler {
 	 * 
 	 * -e "encoding" <br>
 	 * Specifies encoding.<p>
+	 * 
+	 *  -w "WikipediaDatabase@WikipediaServer" <br>
+	 * Specifies wikipedia data.<p>
 	 * 
 	 * -d<br>
 	 * Turns debugging mode on.<p>
@@ -404,14 +408,11 @@ public class MauiModelBuilder implements OptionHandler {
 		String vocabularyName = Utils.getOption('v', options);
 		if (vocabularyName.length() > 0) {
 			setVocabularyName(vocabularyName);
-		} else {
-			setVocabularyName(null);
-			throw new Exception("Name of vocabulary required argument.");
-		}
+		} 
 
 		String vocabularyFormat = Utils.getOption('f', options);
 
-		if (!getVocabularyName().equals("none")) {
+		if (!getVocabularyName().equals("none") && !getVocabularyName().equals("wikipedia")) {
 			if (vocabularyFormat.length() > 0) {
 				if (vocabularyFormat.equals("skos")
 						|| vocabularyFormat.equals("text")) {
@@ -435,6 +436,11 @@ public class MauiModelBuilder implements OptionHandler {
 		} else {
 			setEncoding("default");
 		}
+		
+		String wikipediaConnection = Utils.getOption('w', options);
+		if (wikipediaConnection.length() > 0) {
+			setWikipedia(wikipediaConnection);
+		} 
 
 		String documentLanguage = Utils.getOption('i', options);
 		if (documentLanguage.length() > 0) {
@@ -528,7 +534,7 @@ public class MauiModelBuilder implements OptionHandler {
 	 */
 	public Enumeration<Option> listOptions() {
 
-		Vector<Option> newVector = new Vector<Option>(11);
+		Vector<Option> newVector = new Vector<Option>(12);
 
 		newVector.addElement(new Option("\tSpecifies name of directory.", "l",
 				1, "-l <directory name>"));
@@ -544,6 +550,8 @@ public class MauiModelBuilder implements OptionHandler {
 				"i", 1, "-i <document language>"));
 		newVector.addElement(new Option("\tSpecifies encoding.", "e", 1,
 				"-e <encoding>"));
+		newVector.addElement(new Option("\tSpecifies wikipedia database and server.", "w", 1,
+		"-w <wikipediaDatabase@wikipediaServer>"));
 		newVector.addElement(new Option("\tTurns debugging mode on.", "d", 0,
 				"-d"));
 		newVector.addElement(new Option(
@@ -605,6 +613,8 @@ public class MauiModelBuilder implements OptionHandler {
 					+ inputDirectoryName);
 		}
 
+		System.err.println("-- Building the model... ");
+		
 		FastVector atts = new FastVector(3);
 		atts.addElement(new Attribute("filename", (FastVector) null));
 		atts.addElement(new Attribute("document", (FastVector) null));
@@ -649,7 +659,7 @@ public class MauiModelBuilder implements OptionHandler {
 
 		
 
-		System.err.println("-- Reading the Documents... ");
+		System.err.println("-- Reading the input documents... ");
 
 		for (String fileName : fileNames) {
 
@@ -778,10 +788,8 @@ public class MauiModelBuilder implements OptionHandler {
 
 			modelBuilder.saveModel();
 
-			if (modelBuilder.getDebug() == true) {
-				System.err.print("Done!");
-			}
-
+			System.err.print("Done!");
+			
 		} catch (Exception e) {
 
 			// Output information on how to use this class

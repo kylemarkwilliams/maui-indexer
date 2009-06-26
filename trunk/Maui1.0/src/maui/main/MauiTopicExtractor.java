@@ -72,6 +72,9 @@ import maui.stopwords.*;
  * 
  * -e "encoding"<br>
  * Specifies encoding.<p>
+ * 
+ *  -w "WikipediaDatabase@WikipediaServer" <br>
+ * Specifies wikipedia data.<p>
  *
  * -n <br>
  * Specifies number of phrases to be output (default: 5).<p>
@@ -157,25 +160,14 @@ public class MauiTopicExtractor implements OptionHandler {
 		this.wikipedia = wikipedia;
 	}
 	
-	public String getWikipediaDatabase() {
-		return wikipediaDatabase;
-	}
-
 	public void setWikipediaDatabase(String wikipediaDatabase) {
 		this.wikipediaDatabase = wikipediaDatabase;
-	}
-	
-	public String getWikipediaServer() {
-		return wikipediaServer;
 	}
 
 	public void setWikipediaServer(String wikipediaServer) {
 		this.wikipediaServer = wikipediaServer;
 	}
 	
-	public String getWikipediaDataDirectory() {
-		return wikipediaDataDirectory;
-	}
 
 	public void setWikipediaDataDirectory(String wikipediaDataDirectory) {
 		this.wikipediaDataDirectory = wikipediaDataDirectory;
@@ -246,6 +238,12 @@ public class MauiTopicExtractor implements OptionHandler {
 		this.documentEncoding = documentEncoding;
 	}
 	
+	public void setWikipedia(String wikipediaConnection) {
+		int at = wikipediaConnection.indexOf("@");
+		setWikipediaDatabase(wikipediaConnection.substring(0,at));
+		setWikipediaServer(wikipediaConnection.substring(at+1));
+	}
+	
 	public String getVocabularyName() {
 		return vocabularyName;
 	}
@@ -307,6 +305,9 @@ public class MauiTopicExtractor implements OptionHandler {
 	 * 
 	 * -e "encoding"<br>
 	 * Specifies encoding.<p>
+     *
+     *  -w "WikipediaDatabase@WikipediaServer" <br>
+     * Specifies wikipedia data.<p>
 	 *
 	 * -n<br>
 	 * Specifies number of phrases to be output (default: 5).<p>
@@ -343,10 +344,7 @@ public class MauiTopicExtractor implements OptionHandler {
 		String vocabularyName = Utils.getOption('v', options);
 		if (vocabularyName.length() > 0) {
 			setVocabularyName(vocabularyName);
-		} else {
-			setVocabularyName(null);
-			throw new Exception("Name of vocabulary required argument.");
-		}
+		} 
 		
 		String vocabularyFormat = Utils.getOption('f', options);
 		
@@ -372,6 +370,11 @@ public class MauiTopicExtractor implements OptionHandler {
 		} else {
 			setEncoding("default");
 		}
+		
+		String wikipediaConnection = Utils.getOption('w', options);
+		if (wikipediaConnection.length() > 0) {
+			setWikipedia(wikipediaConnection);
+		} 
 		
 		String documentLanguage = Utils.getOption('i', options);
 		if (documentLanguage.length() > 0) {
@@ -462,7 +465,7 @@ public class MauiTopicExtractor implements OptionHandler {
 	 */
 	public Enumeration<Option> listOptions() {
 		
-		Vector<Option> newVector = new Vector<Option>(13);
+		Vector<Option> newVector = new Vector<Option>(14);
 		
 		newVector.addElement(new Option(
 				"\tSpecifies name of directory.",
@@ -479,6 +482,8 @@ public class MauiTopicExtractor implements OptionHandler {
 		newVector.addElement(new Option(
 				"\tSpecifies encoding.",
 				"e", 1, "-e <encoding>"));		
+		newVector.addElement(new Option("\tSpecifies wikipedia database and server.", "w", 1,
+		"-w <wikipediaDatabase@wikipediaServer>"));
 		newVector.addElement(new Option(
 				"\tSpecifies document language (en (default), es, de, fr).",
 				"i", 1, "-i <document language>"));
@@ -559,7 +564,7 @@ public class MauiTopicExtractor implements OptionHandler {
 		atts.addElement(new Attribute("keyphrases", (FastVector) null));
 		Instances data = new Instances("keyphrase_training_data", atts, 0);
 		
-		System.err.println("-- Extracting Keyphrases... ");
+		System.err.println("-- Extracting keyphrases... ");
 		
 		Vector<Double> correctStatistics = new Vector<Double>();
 		Vector<Double> precisionStatistics = new Vector<Double>();
@@ -745,8 +750,8 @@ public class MauiTopicExtractor implements OptionHandler {
 		double stdDevPrecision = Math.sqrt(Utils.variance(st));
 		
 		System.err.println("Precision: " +
-				Utils.doubleToString(avgPrecision, 2) + " +/- " + 
-				Utils.doubleToString(stdDevPrecision, 2));
+				Utils.doubleToString(avgPrecision*100, 2) + " +/- " + 
+				Utils.doubleToString(stdDevPrecision*100, 2));
 		
 		st = new double[recallStatistics.size()];
 		for (int i = 0; i < recallStatistics.size(); i++) {
@@ -756,11 +761,11 @@ public class MauiTopicExtractor implements OptionHandler {
 		double stdDevRecall = Math.sqrt(Utils.variance(st));
 		
 		System.err.println("Recall: " +
-				Utils.doubleToString(avgRecall, 2) + " +/- " + 
-				Utils.doubleToString(stdDevRecall, 2));
+				Utils.doubleToString(avgRecall*100, 2) + " +/- " + 
+				Utils.doubleToString(stdDevRecall*100, 2));
 		
 		double fMeasure = 2*avgRecall*avgPrecision/(avgRecall + avgPrecision);
-		System.err.println("F-Measure: " + Utils.doubleToString(fMeasure, 2));
+		System.err.println("F-Measure: " + Utils.doubleToString(fMeasure*100, 2));
 		
 		System.err.println("");
 		}
@@ -808,7 +813,7 @@ public class MauiTopicExtractor implements OptionHandler {
 			System.err.println();
 			
 			// Loading selected Model:
-			System.err.println("-- Loading the Model... ");
+			System.err.println("-- Loading the model... ");
 			topicExtractor.loadModel();
 			
 			// Extracting Keyphrases from all files in the selected directory

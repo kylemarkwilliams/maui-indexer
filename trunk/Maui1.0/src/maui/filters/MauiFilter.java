@@ -21,7 +21,10 @@ package maui.filters;
 import gnu.trove.TIntHashSet;
 
 import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
 import java.lang.Math;
 import java.sql.SQLException;
 import java.util.Arrays;
@@ -107,9 +110,9 @@ public class MauiFilter extends Filter {
 
 	private double minKeyphraseness = 0.01;
 
-	private double minSenseProbability = 0.05;
+	private double minSenseProbability = 0.005;
 
-	private int maxContextSize = 10;
+	private int maxContextSize = 5;
 
 	transient TextProcessor textProcessor = new CaseFolder();
 
@@ -441,7 +444,9 @@ public class MauiFilter extends Filter {
 			vocabulary.setStemmer(stemmer);
 			vocabulary.setStopwords(stopwords);
 			vocabulary.setDebug(debugMode);
+			vocabulary.setLanguage(documentLanguage);
 			vocabulary.initialize();
+			
 		} catch (Exception e) {
 			System.err.println("Failed to load thesaurus!");
 			e.printStackTrace();
@@ -612,15 +617,16 @@ public class MauiFilter extends Filter {
 		allCandidates = new HashMap<Instance, HashMap<String, Candidate>>();
 
 		// Convert pending input instances into data for classifier
-		for (int i = 0; i < getInputFormat().numInstances(); i++) {
+		int totalDocuments = getInputFormat().numInstances();
+		for (int i = 0; i < totalDocuments; i++) {
 
 			Instance current = getInputFormat().instance(i);
 
 			String fileName = current.stringValue(fileNameAtt);
-
+			int j = i+1;
 			if (debugMode) {
 				System.err.println("---- Processing document " + fileName
-						+ "...");
+						+ ", " + j + " out of " + totalDocuments + "...");
 			}
 
 			// Get the phrases for the document
@@ -629,8 +635,7 @@ public class MauiFilter extends Filter {
 			HashMap<String, Candidate> candidateList = getCandidates(documentText);
 
 			if (debugMode) {
-				System.err.println("---- Candidates extracted: "
-						+ candidateList.size());
+				System.err.println("---- " + candidateList.size() + " candidates");
 			}
 			allCandidates.put(current, candidateList);
 		}
@@ -739,9 +744,9 @@ public class MauiFilter extends Filter {
 		if (debugMode) {
 			System.err.println("--- Converting instances for classifier");
 		}
-
+		int totalDocuments = getInputFormat().numInstances();
 		// Convert pending input instances into data for classifier
-		for (int i = 0; i < getInputFormat().numInstances(); i++) {
+		for (int i = 0; i < totalDocuments; i++) {
 			Instance current = getInputFormat().instance(i);
 
 			// Get the key phrases for the document
@@ -756,6 +761,11 @@ public class MauiFilter extends Filter {
 			// add the instance to the data for the classifier
 			int countPos = 0;
 			int countNeg = 0;
+			
+			if (debugMode) {
+				System.err.println("--- Computing features for document " + i + " out of " + totalDocuments + "...");
+			}
+			
 			for (Candidate candidate : candidateList.values()) {
 
 				// ignore all candidates that appear less than a threshold
@@ -763,6 +773,7 @@ public class MauiFilter extends Filter {
 					continue;
 				}
 
+				
 				// compute feature values
 				double[] vals = computeFeatureValues(candidate, true,
 						hashKeyphrases, candidateList);
@@ -777,8 +788,10 @@ public class MauiFilter extends Filter {
 				classifierData.add(inst);
 
 			}
-			System.err.println(countPos + " positive; " + countNeg
-					+ " negative instances");
+			if (debugMode) {
+				System.err.println(countPos + " positive; " + countNeg
+						+ " negative instances");
+			}
 		}
 
 		if (debugMode) {
@@ -812,9 +825,15 @@ public class MauiFilter extends Filter {
 			classifier.setOptions(options);
 
 		}
+		
+		FileOutputStream out =  new FileOutputStream(new File("19docs.arff"));
+		PrintWriter printer = new PrintWriter(out);
+		
+		printer.write(classifierData.toString());
 
-		// System.out.println(classifierData);
-
+		printer.close();
+		out.close();
+		
 		classifier.buildClassifier(classifierData);
 
 		if (debugMode) {
@@ -837,6 +856,7 @@ public class MauiFilter extends Filter {
 		// Compute feature values
 		double[] newInst = new double[numFeatures + 1];
 
+		String id = candidate.getName();
 		String name = candidate.getName();
 		String original = candidate.getBestFullForm();
 		String title = candidate.getTitle();
@@ -872,10 +892,11 @@ public class MauiFilter extends Filter {
 		}
 
 		if (useKeyphrasenessFeature) {
-			if (vocabularyName.equals("wikipedia")) {
+			if (!vocabularyName.equals("none")) {
 				name = title;
 			}
 			Counter domainKeyphr = keyphraseDictionary.get(name);
+		
 			if ((training) && (hashKeyphrases != null)
 					&& (hashKeyphrases.containsKey(name))) {
 				newInst[domainKeyphIndex] = domainKeyphr.value() - 1;
@@ -918,7 +939,7 @@ public class MauiFilter extends Filter {
 				}
 			} else if (vocabulary != null) {
 
-				Vector<String> relatedTerms = vocabulary.getRelated(name);
+				Vector<String> relatedTerms = vocabulary.getRelated(id);
 
 				if (relatedTerms != null) {
 					for (String relatedTerm : relatedTerms) {
@@ -928,91 +949,134 @@ public class MauiFilter extends Filter {
 				}
 
 			}
-		//	if (nodeDegree != 0) {
-		//		System.out.println(candidate + " has node degree " + nodeDegree);
-		//	}
+			if (nodeDegree != 0) {
+			//	System.err.println(candidate + " has node degree " + nodeDegree);
+			}
 			newInst[nodeDegreeIndex] = (double) nodeDegree;
 		}
 
+		Anchor anchor = null;
 		if (useBasicWikipediaFeatures && wikipedia != null) {
-
+			
 
 			double wikipKeyphraseness = 0;
 			if (vocabularyName.equals("wikipedia")) {
 				wikipKeyphraseness = candidate.getWikipKeyphraseness();	
 			} else {
-				Anchor anchor = null;
+				
 				try {
 					anchor = new Anchor(wikipedia.getDatabase()
 							.addEscapes(original), null, wikipedia.getDatabase());
+				//	System.out.println(original + "\t" + anchor.getText() + "\t" + anchor.getLinkProbability());
+					
 					if (anchor != null) {
 						if (anchor.getLinkProbability() != 0) {
 							wikipKeyphraseness = anchor.getLinkProbability();
 						}
+					} else {
+						wikipKeyphraseness = Instance.missingValue();
 					}
 				} catch (SQLException e) {
 					System.err.println("Error retrieving the anchor for " + candidate);
 				//	e.printStackTrace();
 				}
 			}
-			newInst[wikipKeyphrIndex] = wikipKeyphraseness;	
-			newInst[totalWikipKeyphrIndex] = candidate.getTotalWikipKeyphraseness();
+			newInst[wikipKeyphrIndex] = wikipKeyphraseness;
+			if (vocabularyName.equals("wikipedia")) {
+				newInst[totalWikipKeyphrIndex] = candidate.getTotalWikipKeyphraseness();
+			} else {
+				HashMap<String,Counter> fullForms = candidate.getFullForms();
+				double totalWikipKeyphr = 0;
+				for (String form : fullForms.keySet()) {
+					Anchor a1 = null;
+					try {
+						
+						a1 = new Anchor(wikipedia.getDatabase()
+								.addEscapes(form), null, wikipedia.getDatabase());
+						if (a1 != null) {
+							if (a1.getLinkProbability() != 0) {
+								totalWikipKeyphr += a1.getLinkProbability()*fullForms.get(form).value();
+							}
+						} 
+					} catch (SQLException e) {
+						System.err.println("Error retrieving the anchor for " + candidate);
+					//	e.printStackTrace();
+					}
+				
+				}
+				newInst[totalWikipKeyphrIndex] = totalWikipKeyphr;
+			}
 
 		//	System.out.println(candidate + "\t wikip Keyphr " + newInst[wikipKeyphrIndex] + "\t total wikip Keyphr " + newInst[totalWikipKeyphrIndex]);
 
 		}
 
 		if (useAllWikipediaFeatures) {
-
-			if (candidateArticle == null) {
-				try {
-						candidateArticle = wikipedia.getMostLikelyArticle(original,
-								new CaseFolder());
-					
-				} catch (SQLException e) {
-					e.printStackTrace();
-				}
-			}
-			
-				double wikipFrequency = 0;
-				double generality = 0;
-				double semRelatedness = 0;
-
-				if (candidateArticle != null) {
-					try {
-						double pageCount = candidateArticle.getLinksInCount();
-						wikipFrequency = -Math.log(pageCount / 2000000);
-						generality = candidateArticle.getGenerality();
-					} catch (SQLException e) {
-						e.printStackTrace();
-					}
-				}
-
-				if (vocabularyName.equals("wikipedia") && candidateArticle != null) {
-					for (Candidate c : candidates.values()) {
-						if (!c.equals(candidate)) {
-								double relatedness = 0;
-								Article article = c.getArticle();
-								try {
-									relatedness = candidateArticle.getRelatednessTo(article);
-									
-								} catch (SQLException e) {
-									e.printStackTrace();
-								}
-								if (relatedness > 0) {
-									semRelatedness += relatedness ;	
-								}
+			//		System.out.println(candidate.getBestFullForm() + "\t" + original + "\t" + candidateArticle);
+					if (candidateArticle == null) {
+						try {
+							if (anchor != null && !anchor.getSenses().isEmpty()) {
+								candidateArticle = anchor.getSenses().first();
+							}	
+						//	
+							
+						} catch (SQLException e) {
+							e.printStackTrace();
 						}
 					}
-					semRelatedness = semRelatedness / (candidates.size() - 1);
-				}
-				newInst[semRelIndex] = semRelatedness;
-				newInst[invWikipFreqIndex] = wikipFrequency;
-				newInst[generalityIndex] = generality;
-				// System.out.println(candidate + "\t sem rel  " + newInst[semRelIndex]); 
-				                                                        // + "\t inv wikip freq  " + newInst[invWikipFreqIndex] + " general " + newInst[generalityIndex] );
+				
+						double wikipFrequency = 0;
+						double generality = 0;
+						double semRelatedness = 0;
 
-		}
+						if (candidateArticle != null) {
+							try {
+								double pageCount = candidateArticle.getLinksInCount();
+								wikipFrequency = -Math.log(pageCount / 2000000);
+								generality = candidateArticle.getGenerality();
+							} catch (SQLException e) {
+								e.printStackTrace();
+							}
+						} else {
+							wikipFrequency = Instance.missingValue();
+							generality = Instance.missingValue();
+						}
+
+						if (vocabularyName.equals("wikipedia") && candidateArticle != null) {
+							
+							for (Candidate c : candidates.values()) {
+							//	System.out.println("\t" + c + "\t" + c.getArticle() + " vs " + candidate + "\t" + c.equals(candidate));
+								if (!c.getTitle().equals(candidate.getTitle())) {
+								//	System.out.println("Comparing " + c + " and " + candidateArticle);
+										double relatedness = 0;
+										Article article = c.getArticle();
+									
+										try {
+											relatedness = candidateArticle.getRelatednessTo(article);
+											
+										//	System.out.println("\t r" + relatedness);
+										} catch (SQLException e) {
+											e.printStackTrace();
+										}
+										if (relatedness > 0) {
+											semRelatedness += relatedness ;	
+										}
+										
+								}
+							}
+						//	System.out.println("\t\t" + semRelatedness);
+							semRelatedness = semRelatedness / (candidates.size() - 1);
+						} else {
+							semRelatedness= Instance.missingValue();
+						}
+						
+						newInst[semRelIndex] = semRelatedness;
+						newInst[invWikipFreqIndex] = wikipFrequency;
+						newInst[generalityIndex] = generality;
+					//	System.out.println(candidate + "\t sem rel  " + newInst[semRelIndex]
+					 //                                                   + "\t inv wikip freq  " + newInst[invWikipFreqIndex] + " general " + newInst[generalityIndex] );//
+
+				}
 
 		// Compute class value
 		String checkManual = name;
@@ -1035,6 +1099,13 @@ public class MauiFilter extends Filter {
 				newInst[numFeatures] = c; // Keyphrase
 			}
 		}
+		/*
+		System.out.println(candidate);
+		System.out.println("\tTFxIDF " + newInst[tfidfIndex]);
+		System.out.println("\ttotalWikipKeyphrIndex " + newInst[totalWikipKeyphrIndex]);
+		System.out.println("\tfirstOccurIndex " + newInst[firstOccurIndex]);
+		System.out.println("\tsemRelIndex " + newInst[semRelIndex]);
+		*/
 		return newInst;
 	}
 
@@ -1090,7 +1161,7 @@ public class MauiFilter extends Filter {
 
 		Instances outFormat = new Instances("mauidata", atts, 0);
 		setOutputFormat(outFormat);
-
+		
 		// Convert pending input instances into output data
 		for (int i = 0; i < getInputFormat().numInstances(); i++) {
 			Instance current = getInputFormat().instance(i);
@@ -1136,9 +1207,10 @@ public class MauiFilter extends Filter {
 		} else {
 			candidateList = getCandidates(documentText);
 		}
-
-		System.err.println(candidateList.size() + " candidates ");
-
+		if (debugMode) {
+			System.err.println(candidateList.size() + " candidates ");
+		}
+		
 		// Set indices for key attributes
 		int tfidfAttIndex = documentAtt + 2;
 		int distAttIndex = documentAtt + 3;
@@ -1242,10 +1314,11 @@ public class MauiFilter extends Filter {
 				countPos++;
 			}
 		}
-
-		System.err.println(countPos + " positive; " + countNeg
-				+ " negative instances");
-
+		if (debugMode) {
+			System.err.println(countPos + " positive; " + countNeg
+					+ " negative instances");
+		}
+		
 		// Sort phrases according to their distance (stable sort)
 		double[] vals = new double[vector.size()];
 		for (int i = 0; i < vals.length; i++) {
@@ -1331,16 +1404,11 @@ public class MauiFilter extends Filter {
 	public HashMap<String, Candidate> getCandidates(String text) {
 
 		if (debugMode) {
-			System.err.println("---- Extracting candidates...");
+			System.err.println("---- Extracting candidates... ");
 		}
 
 		HashMap<String, Candidate> candidatesTable = new HashMap<String, Candidate>();
-
-		// hash = table to store all the information about phrases extracted
-		// from "str"
-		// str = the content of the document, separated by newlines in sentences
-		int countCandidates = 0;
-
+		
 		String[] buffer = new String[maxPhraseLength];
 
 		// Extracting strings of a predefined length from "str":
@@ -1374,12 +1442,12 @@ public class MauiFilter extends Filter {
 				}
 
 				// Don't consider phrases that end with a stop word
-				if (vocabularyName.equals("none")) {
+			//	if (!vocabularyName.equals("wikipedia")) {
 					if (stopwords.isStopword(buffer[maxPhraseLength - 1])) {
 						// pos++;
 						continue;
 					}
-				}
+			//	}
 
 				// Loop through buffer and add phrases to hashtable
 				StringBuffer phraseBuffer = new StringBuffer();
@@ -1391,13 +1459,13 @@ public class MauiFilter extends Filter {
 
 					// Don't consider phrases that begin with a stop word
 					// In free indexing only
-					if (vocabularyName.equals("none")) {
+				//	if (!vocabularyName.equals("wikipedia")) {
 						if ((i > 1)
 								&& (stopwords.isStopword(buffer[maxPhraseLength
 								                                - i]))) {
 							continue;
 						}
-					}
+					//}
 
 					// Only consider phrases with minimum length
 					if (i >= minPhraseLength) {
@@ -1419,6 +1487,7 @@ public class MauiFilter extends Filter {
 							if (phrase != null)
 								candidateNames.add(phrase);
 							totalFrequency++;
+						//	System.err.println(form + ", ");
 
 						} else if (vocabularyName.equals("wikipedia")) {
 
@@ -1433,14 +1502,16 @@ public class MauiFilter extends Filter {
 							}
 
 						} else {
-
+						//	System.err.println("...retrieving senses for form " + form);
 							// if a controlled vocabulary is used
 							// retrieve its senses
 							for (String sense : vocabulary.getSenses(form)) {
+							//	System.err.println(form + " (" + vocabulary.getTerm(sense)+"), ");
 								candidateNames.add(sense);
 							}
+							
 						}
-
+				//		System.err.println("...conflating candidates");
 						// ignore all those phrases
 						// that have empty pseudo phrases or
 						// that map to nothing in the vocabulary
@@ -1462,10 +1533,10 @@ public class MauiFilter extends Filter {
 													textProcessor, wikipedia
 													.getDatabase());
 											double probability = anchor.getLinkProbability();
+										
 											if (probability >= minKeyphraseness) {
-												// add this candidate to the
-												// list
-												countCandidates++;
+												// add candidate list
+												// System.out.println(form + " (" + Utils.doubleToString(probability,3) + "),");
 												totalFrequency++;
 												firstWord = pos - i;
 												candidate = new Candidate(name,
@@ -1504,7 +1575,6 @@ public class MauiFilter extends Filter {
 									// System.out.println(form);
 									firstWord = pos - i;
 									candidate.recordOccurrence(form, firstWord);
-									countCandidates++;
 									totalFrequency++;
 
 								}
@@ -1518,7 +1588,6 @@ public class MauiFilter extends Filter {
 				}
 			}
 		}
-
 		for (Candidate candidate : candidatesTable.values()) {
 			candidate.normalize(totalFrequency, pos);
 		}
@@ -1526,7 +1595,11 @@ public class MauiFilter extends Filter {
 		if (vocabularyName.equals("wikipedia")) {
 			candidatesTable = disambiguateCandidates(candidatesTable.values());
 		}
-
+	//	for (Candidate candidate : candidatesTable.values()) {
+	//		if (candidate.getFrequency() > 1) {
+	//			System.out.println(candidate.getName() + "\t" + candidate.getTitle() +"\t" + candidate.getFullForms() + "\t"+ candidate.getFrequency() + "\t" + candidate.getFirstOccurrence() + "\t" + candidate.getLastOccurrence() );
+	//		}
+	//	}
 		return candidatesTable;
 	}
 
@@ -1565,12 +1638,21 @@ public class MauiFilter extends Filter {
 				// what is the most likely sense for the given candidate
 				Sense bestSense = anchor.getSenses().first();
 
+				
+				
+				
 				// add to the context all articles that map
 				// from ngrams with one possible meaning
 				// = non-ambiguous meanings
 				// and high probability of being links in Wikipedia
 				if (anchor.getSenses().size() == 1
-						&& anchor.getLinkProbability() > 0.5) {
+						&& anchor.getLinkProbability() >= 0.5) {
+					
+					if (context.contains(bestSense)) {
+						continue;
+					}
+			//	System.out.println("Unambiguous " + candidate + "\t" + bestSense);
+					
 					context.add(bestSense);
 					continue;
 				}
@@ -1583,10 +1665,13 @@ public class MauiFilter extends Filter {
 
 				// b. keyphraseness
 				double linkProbability = anchor.getLinkProbability();
-
-				if (senseProbability >= 0.9 && linkProbability > 0.5) {
+				
+			//	System.out.println("ngram " + candidate.getBestFullForm() + "\t" + bestSense + "\t" + linkProbability + "\t" + senseProbability);
+			
+				if (senseProbability >= 0.9 && linkProbability > 0.1) {
 					bestSense.setWeight(senseProbability);
 					bestCandidateSenses.add(bestSense, false);
+				//	System.out.println("accept!");
 				}
 
 			} catch (SQLException e) {
@@ -1600,7 +1685,10 @@ public class MauiFilter extends Filter {
 			// fill up context anchors with most likely mappings
 			for (int i = 0; i < bestCandidateSenses.size()
 			&& context.size() < maxContextSize; i++) {
+				
 				Article sense = bestCandidateSenses.elementAt(i);
+		//		System.out.println("Adding best from ambiguous " + sense);
+				
 				context.add(sense);
 			}
 		}
@@ -1628,28 +1716,34 @@ public class MauiFilter extends Filter {
 
 		// vector with context articles
 		Vector<Article> context = collectContextTerms(candidates);
-
+	//	System.out.println("context " + context.size());
+		
+	//	for (Article a : context) {
+	//		System.out.println("context " + a);
+	//	}
 		String id;
 		for (Candidate candidate : candidates) {
 
 			// for each candidate between 0 and several candidates are created
 			// so its properites are copied to carry onto newly created
 			// candidates
-
+	// System.out.println("Disambiguating " + candidate);
 			try {
 
 				// assessing each sense of the candidate
 				for (Anchor.Sense sense : candidate.getAnchor().getSenses()) {
-
+		//		System.out.println("sense " + sense);
 					Candidate candidateCopy = candidate.getCopy();
 
-					double senseProbablity = sense.getProbability();
-
-					if (senseProbablity < minSenseProbability)
+					double senseProbability = sense.getProbability();
+					
+					
+					if (senseProbability < minSenseProbability) {
+				//		System.out.println("Ignoring because low prob " + senseProbability);
 						break;
-
+					}
 					// if unambiguous, add immidiately
-					if (senseProbablity == 1.0) {
+					if (senseProbability == 1.0) {
 
 						id = sense.getId() + "";
 						candidateCopy.setName(id);
@@ -1677,8 +1771,8 @@ public class MauiFilter extends Filter {
 						// to avoid multiplication by 0
 						// in cases where an ngram is never an anchor text
 						// but appears as a title of Wikipedia page
-						if (senseProbablity == 0) {
-							senseProbablity = minSenseProbability;
+						if (senseProbability == 0) {
+							senseProbability = minSenseProbability;
 						}
 
 						double semanticRelatedness = 0;
@@ -1695,13 +1789,15 @@ public class MauiFilter extends Filter {
 						}
 
 						// final score
-						double disambiguationScore = senseProbablity
+						double disambiguationScore = senseProbability
 						* semanticRelatedness;
-
+						
+			//			System.out.println("sense probability "+ senseProbability +"sem rel " + semanticRelatedness + "\t" + disambiguationScore);
+						
 						if (disambiguationScore > 0.01) {
 							// this is a valid sense (there may be more than
 							// one)
-
+			//		System.out.println("\t\tACCEPT!");
 							id = sense.getId() + "";
 							candidateCopy.setName(id);
 							candidateCopy.setTitle(sense.getTitle());
@@ -1751,7 +1847,7 @@ public class MauiFilter extends Filter {
 		double totalComparisons = 0;
 
 		for (Article contextArticle : contextArticles) {
-			if (article != contextArticle) {
+			if (article.getId() != contextArticle.getId()) {
 				try {
 					currentRelatedness = article
 					.getRelatednessTo(contextArticle);
@@ -1763,7 +1859,7 @@ public class MauiFilter extends Filter {
 				}
 				totalRelatedness += currentRelatedness;
 				totalComparisons++;
-			}
+			} 
 		}
 		return totalRelatedness / totalComparisons;
 	}
@@ -1839,10 +1935,6 @@ public class MauiFilter extends Filter {
 		} else {
 
 			totalCorrect = keyphrases.size();
-			if (debugMode) {
-				System.err.println("---- Manually assigned keyphrases: "
-						+ totalCorrect);
-			}
 
 			return keyphrases;
 		}
@@ -1859,17 +1951,6 @@ public class MauiFilter extends Filter {
 
 		str = str.toLowerCase();
 
-		// Remove some non-alphanumeric characters
-		str = str.replace('-', ' ');
-		str = str.replace('&', ' ');
-
-		str = str.replaceAll("\\*", "");
-		str = str.replaceAll("\\, ", " ");
-		str = str.replaceAll("\\. ", " ");
-		str = str.replaceAll("\\:", "");
-
-		str = str.trim();
-
 		// sort words alphabetically
 		String[] words = str.split(" ");
 		Arrays.sort(words);
@@ -1877,25 +1958,24 @@ public class MauiFilter extends Filter {
 		for (String word : words) {
 
 			// remove all stopwords
-			if (stopwords.isStopword(word))
-				continue;
+			if (!stopwords.isStopword(word)) {
+		
+				// remove all apostrophes
+				int apostr = word.indexOf('\'');
+				if (apostr != -1)
+					word = word.substring(0, apostr);
 
-			// remove all apostrophes
-			int apostr = word.indexOf('\'');
-			if (apostr != -1)
-				word = word.substring(0, apostr);
+				// ste	mm the remaining words
+				word = stemmer.stem(word);
 
-			// stemm the remaining words
-			word = stemmer.stem(word);
-
-			result += word + " ";
+				result += word + " ";
+			}
 		}
 		result = result.trim();
-		if (result.equals("")) {
-			return null;
-		} else {
+		if (!result.equals("")) {
 			return result;
 		}
+		return null;
 	}
 
 	/**

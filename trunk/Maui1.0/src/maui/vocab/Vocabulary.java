@@ -525,47 +525,52 @@ public class Vocabulary implements Serializable {
 	 * that only contains non-stopwords,
 	 * which are stemmed and sorted into alphabetical order. 
 	 */
-	public String normalizePhrase(String phrase) {
-		
-		String str = phrase;
+	public String normalizePhrase(String phrase) {		
 		
 		if (toLowerCase) {
-			str = str.toLowerCase();
+			phrase = phrase.toLowerCase();
+		}
+		
+		if (toLowerCase) {
+			phrase = phrase.toLowerCase();
+		}
+		StringBuffer result = new StringBuffer();
+		char prev = ' ';
+		int i = 0;
+		while (i < phrase.length()) {
+			char c = phrase.charAt(i);
+			
+			// we ignore everything after the "/" symbol and everything in brackets
+			// e.g. Monocytes/*immunology/microbiology -> monocytes
+			// e.g. Vanilla (Spice) -> vanilla
+			if (c == '/' || c == '(') 
+				break;
+			
+			if (c == '-' ||  c == '&' || c == '.' || c == '.') 
+				c = ' ';
+				
+			if (c == '*' || c == ':') {
+				prev = c;
+				i++;
+				continue;
+			}
+			
+			if (c != ' ' || prev != ' ')
+				result.append(c);
+			
+			prev = c;
+			i++;
 		}
 
-		// This is often the case with Mesh Terms,
-		// where a term is accompanied by another specifying term
-		// e.g. Monocytes/*immunology/microbiology
-		// we ignore everything after the "/" symbol.
-		int slash = str.indexOf('/');
-		if (slash != -1 && slash > 1) {
-			str = str.substring(0, slash);
-		}
-
-		// removes scop notes in brackets
-		if (str.contains(" (")) {
-			int bracket = str.indexOf('(');
-			str = str.substring(0, bracket - 1);
-		}
-
-		// Remove some non-alphanumeric characters
-		str = str.replace('-', ' ');
-		str = str.replace('&', ' ');
-
-		str = str.replaceAll("\\*", "");
-		str = str.replaceAll("\\, ", " ");
-		str = str.replaceAll("\\. ", " ");
-		str = str.replaceAll("\\:", "");
-
-		str = str.trim();
-
+	
+		phrase = result.toString().trim();
 		
 		if (reorder || stopwords != null || stemmer != null) {
-			phrase = pseudoPhrase(str);
+			phrase = pseudoPhrase(phrase);
 		} 
 		if (phrase.equals("")) {
 			// to prevent cases where the term is a stop word (e.g. Back).
-			return str; 
+			return result.toString(); 
 		} else {
 			return phrase;
 		}
