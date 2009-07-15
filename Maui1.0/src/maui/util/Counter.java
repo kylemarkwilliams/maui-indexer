@@ -41,14 +41,14 @@ public class Counter implements Serializable {
 	}
 	
 	/**
-	 * Increments the counter.
+	 * Increments the counter by a given value.
 	 */
 	public void increment(int number) {
 		value += number;
 	}
 
 	/**
-	 * Gets the value.
+	 * Returns the value.
 	 * @return the value
 	 */
 	public int value() {
@@ -56,7 +56,7 @@ public class Counter implements Serializable {
 	}
 
 	/**
-	 * Returns string containing value.
+	 * Returns the value as a string
 	 */
 	public String toString() {
 		return String.valueOf(value);

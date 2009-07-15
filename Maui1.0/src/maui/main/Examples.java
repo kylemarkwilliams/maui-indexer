@@ -38,14 +38,14 @@ import org.wikipedia.miner.util.text.CaseFolder;
 import org.wikipedia.miner.util.text.TextProcessor;
 
 /**
- * Demonstrates how to use Maui for three types of topic extraction 
+ * Demonstrates how to use Maui for three types of topic indexing  <br>
  * 1. Keyphrase extraction - extracting significant phrases from 
- *  the document, also suitable for automatic tagging. 
+ *  the document, also suitable for automatic tagging. <br>
  * 2. Term assignment - indexing documents with terms
- * from a controlled vocabulary in SKOS or text format. 
+ * from a controlled vocabulary in SKOS or text format. <br> 
  * 3. Indexing with Wikipedia - indexing documents with 
  * terms from Wikipedia, also suitable for
- * keyphrase extraction and tagging, or any case where there is no controlled
+ * keyphrase extraction and tagging, or any case where there is no con	trolled
  * vocabulary available, but consistency is required.
  * 
  * @author Olena Medelyan (olena@cs.waikato.ac.nz)
