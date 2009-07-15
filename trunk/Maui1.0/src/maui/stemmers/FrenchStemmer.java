@@ -20,7 +20,7 @@ package maui.stemmers;
 
 /**
  * A stemmer for French words. The algorithm is based on the work of
- * Dr Martin Porter on his snowball project<br>
+ * Martin Porter on his snowball project<br>
  * refer to http://snowball.sourceforge.net/french/stemmer.html<br>
  * (French stemming algorithm) for details
  *

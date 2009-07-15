@@ -72,18 +72,18 @@ import weka.classifiers.meta.RegressionByDiscretization;
  * classification. It assumes that the dataset contains three string attributes.
  * The first attribute should contain the name of the file. The second attribute
  * should contain the text of a document from that file. The second attribute
- * should contain the keyphrases associated with that document (if present).
- * 
+ * should contain the topics associated with that document (if present).
+ * <br>
  * The filter converts every instance (i.e. document) into a set of instances,
- * one for each word-based n-gram in the document. The string attribute
+ * one for each candidate topic identified in the document. The string attribute
  * representing the document is replaced by some numeric features, the estimated
- * probability of each n-gram being a keyphrase, and the rank of this phrase in
- * the document according to the probability. Each new instances also has a
- * class value associated with it. The class is "true" if the n-gram is a true
- * keyphrase, and "false" otherwise. It is also possible to use numeric
- * attributes, if more then one manually selected keyphrase sets per document
- * were available. If the input document doesn't come with author-assigned
- * keyphrases, the class values for that document will be missing.
+ * probability of each candidate being a topic, and the rank of this candidate in
+ * the document according to the probability. Each new instance also has a
+ * class value associated with it. The class is "true" if the topic has been assigned manually to 
+ * this document, and "false" otherwise. It is also possible to use numeric
+ * attributes, if more then one manually selected topic sets per document
+ * are available. If the input document doesn't come with author-assigned
+ * topics, the class values for that document will be missing.
  * 
  * @author Eibe Frank (eibe@cs.waikato.ac.nz), Olena Medelyan
  *         (olena@cs.waikato.ac.nz)

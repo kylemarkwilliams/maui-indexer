@@ -19,7 +19,7 @@ public class Candidate {
 		/** The title of the descriptor in the vocabulary */
 		String title;
 		
-		/** Number of occurrences of the term in the document */
+		/** Number of occurrences of the candidate in the document */
 		int frequency;
 		
 		/**  Normalized frequenc */
@@ -119,17 +119,16 @@ public class Candidate {
 			return totalWikipKeyphraseness;
 		}
 		
-		/** Returns all phrases in the document that were mapped to the given candidate.
+		/** Returns all document phrases that were mapped to this candidate.
 		 * 
-		 * @return HashMap with keys representing the full forms & keys representing their frequencies
+		 * @return HashMap in which the keys are the full forms and the values are their frequencies
 		 */
 		public HashMap<String,Counter> getFullForms() {
 			return fullForms;
 		}
 		
 		/**
-		 * Where in the document did the candidate occurr again
-		 * and with what full form?
+		 * Records the occurrence position and the full form of a candidate
 		 * 
 		 * @param fullForm
 		 * @param occurrence
@@ -151,7 +150,8 @@ public class Candidate {
 		}
 		
 		/**
-		 * In case of free keyphrase indexing retrieves what form appears most frequency
+		 * In case of free indexing, e.g. tagging or keyphrase extraction,
+		 * retrieves the most frequent full form
 		 * for a given candidate. 
 		 * @return best full form of a candidate
 		 */
@@ -193,7 +193,7 @@ public class Candidate {
 		}
 		
 		/**
-		 * Normalize all occurrences and frequencies by the totals
+		 * Normalizes all occurrence positions and frequencies by the total values in the given document
 		 */
 		public void normalize(int totalFrequency, int documentLength) {
 			termFrequency = frequency/(double)totalFrequency;
@@ -218,6 +218,10 @@ public class Candidate {
 		return name + ": " + title;
 	}
 
+	/**
+	 * If two candidates were disambiguated to the same topic, their values are merged.
+	 * @param previousCandidate
+	 */
 	public void mergeWith(Candidate previousCandidate) {
 
 		// name stays the same
@@ -271,7 +275,7 @@ public class Candidate {
 	}
 
 	/**
-	 * Retrieves a complete summary about the candidate
+	 * Retrieves all recorded info about a candidate
 	 * @return
 	 */
 	public String getInfo() {

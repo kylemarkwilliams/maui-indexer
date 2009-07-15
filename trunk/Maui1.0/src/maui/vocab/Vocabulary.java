@@ -26,7 +26,7 @@ import com.hp.hpl.jena.rdf.model.StmtIterator;
  * vocabulary_name.en (with "ID TERM" per line) - descriptors & non-descriptors
  * vocabulary_name.use (with "ID_NON-DESCR \t ID_DESCRIPTOR" per line)
  * vocabulary_name.rel (with "ID \t RELATED_ID1 RELATED_ID2 ... " per line)
- * See KEA's homepage for more details.
+ * 
  * @author Olena Medelyan
  */
 
@@ -91,12 +91,12 @@ public class Vocabulary implements Serializable {
 	/** Vocabulary constructor. 
 	 * 
 	 * Given the name of the vocabulary and the format, it first checks whether
-	 * the data/vocabularies directory contains the specified files:
-	 * - vocabularyName.rdf if skos format is selected
-	 * - or a set of 3 flat txt files starting with vocabularyName and with extensions
-	 * .en (id term)
-	 * .use (non-descriptor \t descriptor)
-	 * .rel (id \t related_id1 related_id2 ...)
+	 * the data/vocabularies directory contains the specified files:<br>
+	 * - vocabularyName.rdf if skos format is selected<br>
+	 * - or a set of 3 flat txt files starting with vocabularyName and with extensions<br>
+	 * <li>.en (id term)
+	 * <li>.use (non-descriptor \t descriptor)
+	 * <li>.rel (id \t related_id1 related_id2 ...)
 	 * If the required files exist, the vocabulary index is built.
 	 * 
 	 * @param vocabularyName The name of the vocabulary file (before extension).
