@@ -26,11 +26,15 @@ import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Vector;
 
+import org.wikipedia.miner.model.Article;
 import org.wikipedia.miner.model.Wikipedia;
+import org.wikipedia.miner.util.text.CaseFolder;
 
 import weka.core.Attribute;
 import weka.core.FastVector;
@@ -91,9 +95,12 @@ import maui.stopwords.*;
  * -g<br>
  * Build global dictionaries from the test set.<p>
  *
+ * -p<br>
+ * Prints plain-text graph description of the topics for visual representation of the results.<p>
+ *
  * -a<br>
  * Also write stemmed phrase and score into ".key" file.<p>
- *
+ * 
  * @author Eibe Frank (eibe@cs.waikato.ac.nz)
  * @version 1.0
  */
@@ -131,7 +138,7 @@ public class MauiTopicExtractor implements OptionHandler {
 	private String wikipediaServer = "localhost"; 
 	
 	/** Name of the database with Wikipedia data */
-	private String wikipediaDatabase = "enwiki_20090306";
+	private String wikipediaDatabase = "database";
 	
 	/** Name of the directory with Wikipedia data in files */
 	private String wikipediaDataDirectory = null;
@@ -152,9 +159,13 @@ public class MauiTopicExtractor implements OptionHandler {
 	/** Also write stemmed phrase and score into .key file. */
 	boolean additionalInfo = false;
 	
+
+	/** Prints plain-text graph description of the topics into a .gv file. */
+	boolean printGraph = false;
+	
 	
 	/** Build global dictionaries from the test set. */
-	boolean buildGlobalDictionaries = false;
+	boolean buildGlobalDictionary = false;
 	
 	public void setWikipedia(Wikipedia wikipedia) {
 		this.wikipedia = wikipedia;
@@ -189,12 +200,22 @@ public class MauiTopicExtractor implements OptionHandler {
 		this.additionalInfo = additionalInfo;
 	}
 	
-	public boolean getBuildGlobalDictionaries() {		
-		return buildGlobalDictionaries;
+	public boolean getBuildGlobal() {		
+		return buildGlobalDictionary;
 	}
 	
-	public void setBuildGlobal(boolean buildGlobalDictionaries) {	
-		this.buildGlobalDictionaries = buildGlobalDictionaries;
+	public void setBuildGlobal(boolean buildGlobalDictionary) {	
+		this.buildGlobalDictionary = buildGlobalDictionary;
+	}
+	
+	
+	
+	public boolean getPrintGraph() {		
+		return printGraph;
+	}
+	
+	public void setPrintGraph(boolean printGraph) {	
+		this.printGraph = printGraph;
 	}
 	
 
@@ -243,6 +264,7 @@ public class MauiTopicExtractor implements OptionHandler {
 		setWikipediaDatabase(wikipediaConnection.substring(0,at));
 		setWikipediaServer(wikipediaConnection.substring(at+1));
 	}
+	
 	
 	public String getVocabularyName() {
 		return vocabularyName;
@@ -348,7 +370,7 @@ public class MauiTopicExtractor implements OptionHandler {
 		
 		String vocabularyFormat = Utils.getOption('f', options);
 		
-		if (!getVocabularyName().equals("none")) {
+		if (!getVocabularyName().equals("none") && !getVocabularyName().equals("wikipedia")) {
 			if (vocabularyFormat.length() > 0) {
 				if (vocabularyFormat.equals("skos") || vocabularyFormat.equals("text")) {
 					setVocabularyFormat(vocabularyFormat);
@@ -407,6 +429,7 @@ public class MauiTopicExtractor implements OptionHandler {
 		
 		setDebug(Utils.getFlag('d', options));
 		setBuildGlobal(Utils.getFlag('b', options));
+		setPrintGraph(Utils.getFlag('p', options));
 		setAdditionalInfo(Utils.getFlag('a', options));
 		Utils.checkForRemainingOptions(options);
 	}
@@ -418,7 +441,7 @@ public class MauiTopicExtractor implements OptionHandler {
 	 */
 	public String [] getOptions() {
 		
-		String [] options = new String [21];
+		String [] options = new String [22];
 		int current = 0;
 		
 		options[current++] = "-l"; 
@@ -444,7 +467,12 @@ public class MauiTopicExtractor implements OptionHandler {
 			options[current++] = "-d";
 		}
 		
-		if (getBuildGlobalDictionaries()) {
+
+		if (getPrintGraph()) {
+			options[current++] = "-p";
+		}
+		
+		if (getBuildGlobal()) {
 			options[current++] = "-b";
 		}
 		
@@ -465,7 +493,7 @@ public class MauiTopicExtractor implements OptionHandler {
 	 */
 	public Enumeration<Option> listOptions() {
 		
-		Vector<Option> newVector = new Vector<Option>(14);
+		Vector<Option> newVector = new Vector<Option>(15);
 		
 		newVector.addElement(new Option(
 				"\tSpecifies name of directory.",
@@ -502,6 +530,9 @@ public class MauiTopicExtractor implements OptionHandler {
 		newVector.addElement(new Option(
 				"\tBuilds global dictionaries for computing TFIDF from the test collection.",
 				"b", 0, "-b"));
+		newVector.addElement(new Option(
+				"\tPrints graph description into a \".gv\" file, in GraphViz format.",
+				"p", 0, "-p"));
 		newVector.addElement(new Option(
 				"\tAlso write stemmed phrase and score into \".key\" file.",
 				"a", 0, "-a"));
@@ -551,6 +582,8 @@ public class MauiTopicExtractor implements OptionHandler {
 		mauiFilter.setStopwords(getStopwords());
 		if (wikipedia != null) {
 			mauiFilter.setWikipedia(wikipedia);
+		} else if (wikipediaServer.equals("localhost") && wikipediaDatabase.equals("database")) {
+			mauiFilter.setWikipedia(wikipedia);		
 		} else {
 			mauiFilter.setWikipedia(wikipediaServer, wikipediaDatabase, cacheWikipediaData, wikipediaDataDirectory);
 		}
@@ -671,7 +704,16 @@ public class MauiTopicExtractor implements OptionHandler {
 			}
 			
 			double numExtracted = 0, numCorrect = 0;
+			wikipedia = mauiFilter.getWikipedia();
 			
+			HashMap<Article, Integer> topics = null;
+			
+			if (printGraph) {
+				topics = new HashMap<Article, Integer>();
+			}
+			
+			int p = 0;
+			String root = "";
 			for (int i = 0; i < topicsPerDocument; i++) {
 				if (topRankedInstances[i] != null) {
 					if (!topRankedInstances[i].
@@ -683,9 +725,29 @@ public class MauiTopicExtractor implements OptionHandler {
 						numCorrect += 1.0;
 					}
 					if (printer != null) {
-						printer.print(topRankedInstances[i].
-								stringValue(mauiFilter.getOutputFormIndex()));
+						String topic = topRankedInstances[i].
+						stringValue(mauiFilter.getOutputFormIndex());
+						printer.print(topic);
 						
+						if (printGraph) {
+							
+							Article article = wikipedia.getArticleByTitle(topic);
+							if (article == null) {
+								article = wikipedia.getMostLikelyArticle(topic,
+										new CaseFolder());
+							}
+							if (article != null) {
+								if (root == "") {
+									root = article.getTitle();
+								}
+								topics.put(article, new Integer(p));
+							} else {
+								if (debugMode) {
+									System.err.println("Couldn't find article for " + topic + " in " + documentTopicsFile);
+								}
+							}
+							p++;
+						}
 						if (additionalInfo) {
 							printer.print("\t");
 							printer.print(topRankedInstances[i].
@@ -703,6 +765,11 @@ public class MauiTopicExtractor implements OptionHandler {
 					}
 				}
 			}
+			
+			if (printGraph) {
+				String graphFile = documentTopicsFile.getAbsolutePath().replace(".key",".gv");
+				computeGraph(topics, root, graphFile);
+			}
 			if (numExtracted > 0) {
 				if (debugMode) {
 					System.err.println("-- " + numCorrect + " correct");
@@ -710,7 +777,6 @@ public class MauiTopicExtractor implements OptionHandler {
 				double totalCorrect = mauiFilter.getTotalCorrect();
 				correctStatistics.addElement(new Double(numCorrect));
 				precisionStatistics.addElement(new Double(numCorrect/numExtracted));
-				double recall = (double)numCorrect/totalCorrect;
 				recallStatistics.addElement(new Double(numCorrect/totalCorrect));
 				
 			}
@@ -772,6 +838,90 @@ public class MauiTopicExtractor implements OptionHandler {
 		mauiFilter.batchFinished();
 	}
 	
+	/**
+	 * Prints out a plain-text representation of a graph representing the main topics of the document.
+	 * The nodes are the topics and the edges are relations between them as computed using the Wikipedia Miner.
+	 * Only possible if Wikipedia data is provided.
+	 * 
+	 * @param topics
+	 * @param root
+	 * @param outputFile
+	 */
+	public  void computeGraph(HashMap<Article, Integer> topics,
+			String root, String outputFile) {
+		FileOutputStream out;
+		PrintWriter printer;
+		try {
+			
+			if (debugMode) {
+				System.err.println("Printing graph information into " + outputFile);
+			}
+			
+			out = new FileOutputStream(outputFile);
+			printer = new PrintWriter(out);
+
+			printer.print("graph G {\n");
+
+			printer.print("graph [root=\"" + root
+					+ "\", outputorder=\"depthfirst\"];\n");
+
+			HashSet<String> done = new HashSet<String>();
+			double relatedness = 0;
+			for (Article a : topics.keySet()) {
+				int count = topics.get(a).intValue();
+				if (count < 1) {
+					printer.print("\"" + a.getTitle() + "\" [fontsize=22];\n");
+				} else if (count < 3) {
+					printer
+							.print("\"" + a.getTitle()
+									+ "\" [fontsize = 18];\n");
+				} else if (count < 6) {
+					printer
+							.print("\"" + a.getTitle()
+									+ "\" [fontsize = 14];\n");
+				} else {
+					printer
+							.print("\"" + a.getTitle()
+									+ "\" [fontsize = 12];\n");
+				}
+
+				for (Article c : topics.keySet()) {
+					if (!c.equals(a)) {
+						try {
+							relatedness = a.getRelatednessTo(c);
+							String relation = "\"" + a.getTitle() + "\" -- \""
+									+ c.getTitle();
+							String relation2 = "\"" + c.getTitle() + "\" -- \""
+									+ a.getTitle();
+
+							if (!done.contains(relation2)
+									&& !done.contains(relation)) {
+								done.add(relation2);
+								done.add(relation);
+
+								if (relatedness < 0.2) {
+									printer.print(relation
+											+ "\"[style=invis];\n");
+								} else {
+									printer.print(relation
+											+ "\" [penwidth = \""
+											+ (int) (relatedness * 10 - 0.2)
+											+ "\"];\n");
+								}
+							}
+						} catch (SQLException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			printer.print("}\n");
+			printer.close();
+			out.close();
+		} catch (Exception e1) {
+			e1.printStackTrace();
+		}
+	}
 	
 	
 	/** 
@@ -785,7 +935,7 @@ public class MauiTopicExtractor implements OptionHandler {
 		mauiFilter = (MauiFilter)in.readObject();
 		
 		// If TFxIDF values are to be computed from the test corpus
-		if (buildGlobalDictionaries == true) {
+		if (buildGlobalDictionary == true) {
 			if (debugMode) {
 				System.err.println("-- The global dictionaries will be built from this test collection..");
 			}

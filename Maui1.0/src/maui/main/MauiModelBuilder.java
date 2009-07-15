@@ -24,12 +24,17 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectOutputStream;
+import java.io.PrintWriter;
+import java.sql.SQLException;
 import java.util.Enumeration;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Vector;
 
+import org.wikipedia.miner.model.Article;
 import org.wikipedia.miner.model.Wikipedia;
 
+import weka.classifiers.Classifier;
 import weka.core.Attribute;
 import weka.core.FastVector;
 import weka.core.Instance;
@@ -42,7 +47,7 @@ import maui.stemmers.*;
 import maui.stopwords.*;
 
 /**
- * Builds a keyphrase extraction model from the documents in a given
+ * Builds a topic indexing model from the documents in a given
  * directory.  Assumes that the file names for the documents end with
  * ".txt".  Assumes that files containing corresponding
  * author-assigned keyphrases end with ".key". Optionally an encoding
@@ -82,13 +87,13 @@ import maui.stopwords.*;
  * Sets minimum phrase length (default: 1).<p>
  *
  * -o "number"<br>
- * The minimum number of times a phrase needs to occur (default: 2). <p>
+ * Sets the minimum number of times a phrase needs to occur (default: 2). <p>
  *
- * -s "name of class implementing list of stop words"<br>
- * Sets list of stop words to used (default: StopwordsEnglish).<p>
+ * -s "stopwords class"<br>
+ * Sets the name of the class implementing the stop words (default: StopwordsEnglish).<p>
  *
- * -t "name of class implementing stemmer"<br>
- * Sets stemmer to use (default: IteratedLovinsStemmer). <p>
+ * -t "stemmer class "<br>
+ * Sets stemmer to use (default: PorterStemmer). <p>
  *
  * @author Eibe Frank (eibe@cs.waikato.ac.nz), Olena Medelyan (olena@cs.waikato.ac.nz)
  * @version 1.0
@@ -128,6 +133,9 @@ public class MauiModelBuilder implements OptionHandler {
 	/** Wikipedia object */
 	private Wikipedia wikipedia = null;
 	
+	/** Classifier */
+	private Classifier classifier = null;
+	
 	/** Name of the server with the mysql Wikipedia data */ 
 	private String wikipediaServer = "localhost"; 
 	
@@ -139,12 +147,21 @@ public class MauiModelBuilder implements OptionHandler {
 	
 	/** Should Wikipedia data be cached first? */
 	private boolean cacheWikipediaData = false;
+	
+	/** Minimum keyphraseness of a string */
+	private double minKeyphraseness = 0.01;
+
+	/** Minimum sense probability or commonness */
+	private double minSenseProbability = 0.005;
+
+	/** Minimum number of the context articles */
+	private int contextSize = 5;
 
 	/** Use basic features  
 	 * TFxIDF & First Occurrence */
 	boolean useBasicFeatures = true;
 
-	/** Use keyphraseness feature */
+	/** Use domain keyphraseness feature */
 	boolean useKeyphrasenessFeature = true;
 
 	/** Use frequency features
@@ -211,7 +228,7 @@ public class MauiModelBuilder implements OptionHandler {
 		this.wikipediaServer = wikipediaServer;
 	}
 	
-	public void setWikipedia(String wikipediaConnection) {
+	public void setWikipediaConnection(String wikipediaConnection) {
 		int at = wikipediaConnection.indexOf("@");
 		setWikipediaDatabase(wikipediaConnection.substring(0,at));
 		setWikipediaServer(wikipediaConnection.substring(at+1));
@@ -220,14 +237,15 @@ public class MauiModelBuilder implements OptionHandler {
 	public void setWikipediaDataDirectory(String wikipediaDataDirectory) {
 		this.wikipediaDataDirectory = wikipediaDataDirectory;
 	}
-	
-	public boolean getCachWikipediaData() {
-		return cacheWikipediaData;
-	}
-
 	public void setCachWikipediaData(boolean cacheWikipediaData) {
 		this.cacheWikipediaData = cacheWikipediaData;
 	}
+	
+	public void setClassifier(Classifier classifier) {
+		this.classifier = classifier;
+	}
+
+
 	
 	public int getMinNumOccur() {
 		return minNumOccur;
@@ -340,6 +358,19 @@ public class MauiModelBuilder implements OptionHandler {
 	public void setAllWikipediaFeatures(boolean useAllWikipediaFeatures) {
 		this.useAllWikipediaFeatures = useAllWikipediaFeatures;
 	}
+	
+	public void setContextSize(int contextSize) {
+		this.contextSize = contextSize;
+	}
+	
+	public void setMinSenseProbability(double minSenseProbability) {
+		this.minSenseProbability = minSenseProbability;
+	}
+	
+	public void setMinKeyphraseness(double minKeyphraseness) {
+		this.minKeyphraseness = minKeyphraseness;
+	}
+	
 
 	/**
 	 * Parses a given list of options controlling the behaviour of this object.
@@ -439,7 +470,7 @@ public class MauiModelBuilder implements OptionHandler {
 		
 		String wikipediaConnection = Utils.getOption('w', options);
 		if (wikipediaConnection.length() > 0) {
-			setWikipedia(wikipediaConnection);
+			setWikipediaConnection(wikipediaConnection);
 		} 
 
 		String documentLanguage = Utils.getOption('i', options);
@@ -634,10 +665,17 @@ public class MauiModelBuilder implements OptionHandler {
 		mauiFilter.setVocabularyFormat(getVocabularyFormat());
 		mauiFilter.setStopwords(getStopwords());
 		
+	
 		if (wikipedia != null) {
 			mauiFilter.setWikipedia(wikipedia);
+		} else if (wikipediaServer.equals("localhost") && wikipediaDatabase.equals("database")) {
+			mauiFilter.setWikipedia(wikipedia);		
 		} else {
 			mauiFilter.setWikipedia(wikipediaServer, wikipediaDatabase, cacheWikipediaData, wikipediaDataDirectory);
+		}
+		
+		if (classifier != null) {
+			mauiFilter.setClassifier(classifier);
 		}
 		
 		mauiFilter.setInputFormat(data);
@@ -652,6 +690,12 @@ public class MauiModelBuilder implements OptionHandler {
 		mauiFilter.setBasicWikipediaFeatures(useBasicWikipediaFeatures);
 		mauiFilter.setAllWikipediaFeatures(useAllWikipediaFeatures);
 		mauiFilter.setThesaurusFeatures(useNodeDegreeFeature);
+		
+		mauiFilter.setClassifier(classifier);
+		
+		mauiFilter.setContextSize(contextSize);
+		mauiFilter.setMinKeyphraseness(minKeyphraseness);
+		mauiFilter.setMinSenseProbability(minSenseProbability);
 		
 		if (!vocabularyName.equals("none") && !vocabularyName.equals("wikipedia") ) {
 			mauiFilter.loadThesaurus(getStemmer(), getStopwords());
@@ -745,6 +789,7 @@ public class MauiModelBuilder implements OptionHandler {
 		;
 	}
 
+	
 	/** 
 	 * Saves the extraction model to the file.
 	 */

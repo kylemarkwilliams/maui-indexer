@@ -58,9 +58,42 @@ public class Examples {
 
 	private Wikipedia wikipedia;
 
+	private String server;
+	private String database;
+	private String dataDirectory;
+	private boolean cache = false;
+	
+	public Examples (String server, String database, String dataDirectory, boolean cache) throws Exception  {
+		this.server = server;
+		this.database = database;
+		this.dataDirectory = dataDirectory;
+		this.cache = cache;
+		loadWikipedia();
+	}
 
-	public Examples (boolean cacheData) throws Exception {
-		loadWikipedia(cacheData);
+	public Examples ()  {	}
+
+	private void loadWikipedia() throws Exception {
+
+		wikipedia = new Wikipedia(server, database, "root", null);
+
+		TextProcessor textProcessor = new CaseFolder();
+
+		File dataDir = new File(dataDirectory);
+		
+		if (cache) {
+			ProgressNotifier progress = new ProgressNotifier(5);
+			// cache tables that will be used extensively
+			TIntHashSet validPageIds = wikipedia.getDatabase().getValidPageIds(
+					dataDir, 2, progress);
+			wikipedia.getDatabase().cachePages(dataDir, validPageIds,
+					progress);
+			wikipedia.getDatabase().cacheAnchors(dataDir, textProcessor,
+					validPageIds, 2, progress);
+			wikipedia.getDatabase().cacheInLinks(dataDir, validPageIds,
+					progress);
+			wikipedia.getDatabase().cacheGenerality(dataDir, validPageIds, progress);
+		}
 	}
 	
 	/**
@@ -69,40 +102,37 @@ public class Examples {
 	 * @throws Exception 
 	 */
 	private void setGeneralOptions()  {
-		Stemmer stemmer = new FrenchStemmer();
-		Stopwords stopwords = new StopwordsFrench();
-		String language = "fr";
-		String encoding = "UTF-8";
 	
 		
 		modelBuilder.setDebug(true);
 		modelBuilder.setWikipedia(wikipedia);
 		
-		// language specific options
+		/* language specific options
+		Stemmer stemmer = new FrenchStemmer();
+		Stopwords stopwords = new StopwordsFrench();
+		String language = "fr";
+		String encoding = "UTF-8";
 		modelBuilder.setStemmer(stemmer);
 		modelBuilder.setStopwords(stopwords);
 		modelBuilder.setDocumentLanguage(language);
 		modelBuilder.setEncoding(encoding);
-		
-		// specificity options
-		modelBuilder.setMinPhraseLength(1);
-		modelBuilder.setMaxPhraseLength(5);
-		
-		
-
-		
-		// language specific options
 		topicExtractor.setStemmer(stemmer);
 		topicExtractor.setStopwords(stopwords);
 		topicExtractor.setDocumentLanguage(language);
+		*/
 		
+		/* specificity options
+		modelBuilder.setMinPhraseLength(1);
+		modelBuilder.setMaxPhraseLength(5);
+		*/
+	
 		topicExtractor.setDebug(true);
 		topicExtractor.setNumTopics(10); // how many topics to extract
 		topicExtractor.setWikipedia(wikipedia);
 	}
 
 	/**
-	 * Set true for all features that will be used
+	 * Set which features to use
 	 */
 	private void setFeatures() {
 		modelBuilder.setBasicFeatures(true);
@@ -111,8 +141,8 @@ public class Examples {
 		modelBuilder.setPositionsFeatures(true);
 		modelBuilder.setLengthFeature(true);
 		modelBuilder.setNodeDegreeFeature(true);
-		modelBuilder.setBasicWikipediaFeatures(true);
-		modelBuilder.setAllWikipediaFeatures(true);
+		modelBuilder.setBasicWikipediaFeatures(false);
+		modelBuilder.setAllWikipediaFeatures(false);
 	}
 
 	/**
@@ -128,7 +158,7 @@ public class Examples {
 		setFeatures();
 		
 		// Directories with train & test data
-		String trainDir = "/Users/alyona/Documents/corpora/auto_tagging/180docs/1doc";
+		String trainDir = "data/automatic_tagging/train";
 		String testDir = "data/automatic_tagging/test";
 
 		// name of the file to save the model
@@ -171,12 +201,11 @@ public class Examples {
 		setFeatures();
 		
 		// Directories with train & test data
-		String trainDir = "/Users/alyona/Documents/corpora/term_assignment/FAO_780/1doc";
-		// String trainDir = "data/term_assignment/train";
-		String testDir = "/Users/alyona/Documents/corpora/term_assignment/FAO_780/1doc";
+		String trainDir = "data/term_assignment/train";
+		String testDir = "data/term_assignment/test";
 
 		// Vocabulary
-		String vocabulary = "agrovoc";
+		String vocabulary = "agrovoc_sample";
 		String format = "skos";
 
 		// name of the file to save the model
@@ -193,7 +222,7 @@ public class Examples {
 		fileNames = modelBuilder.collectStems();
 		modelBuilder.buildModel(fileNames);
 		modelBuilder.saveModel();
-/*
+
 		// Settings for topic extractor
 		topicExtractor.setDirName(testDir);
 		topicExtractor.setModelName(modelName);
@@ -204,7 +233,7 @@ public class Examples {
 		topicExtractor.loadModel();
 		fileNames = topicExtractor.collectStems();
 		topicExtractor.extractKeyphrases(fileNames);
-		*/
+		
 	}
 
 	/**
@@ -251,29 +280,7 @@ public class Examples {
 //		topicExtractor.extractKeyphrases(fileNames);
 	}
 
-	private void loadWikipedia(boolean cacheData) throws Exception {
-
-		wikipedia = new Wikipedia("localhost", "enwiki_20090306", "root", null);
-
-		TextProcessor textProcessor = new CaseFolder();
-
-		File dataDirectory = new File(
-				"/Users/alyona/Data/wikipedia/data/20090306");
-		
-		if (cacheData) {
-			ProgressNotifier progress = new ProgressNotifier(5);
-			// cache tables that will be used extensively
-			TIntHashSet validPageIds = wikipedia.getDatabase().getValidPageIds(
-					dataDirectory, 2, progress);
-			wikipedia.getDatabase().cachePages(dataDirectory, validPageIds,
-					progress);
-			wikipedia.getDatabase().cacheAnchors(dataDirectory, textProcessor,
-					validPageIds, 2, progress);
-			wikipedia.getDatabase().cacheInLinks(dataDirectory, validPageIds,
-					progress);
-			wikipedia.getDatabase().cacheGenerality(dataDirectory, validPageIds, progress);
-		}
-	}
+	
 
 	/**
 	 * Main method for running the three types of topic indexing. Comment out
@@ -283,18 +290,35 @@ public class Examples {
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-
+		
+		String mode = args[0];
+		
+		if (!mode.equals("tagging") && !mode.equals("term_assignment") && !mode.equals("indexing_with_wikipedia")) {
+			throw new Exception("Choose one of the three modes: tagging, term_assignment or indexing_with_wikipedia");
+		}
+		
 		Date todaysDate = new java.util.Date();
 		SimpleDateFormat formatter = new SimpleDateFormat(
 				"EEE, dd-MMM-yyyy HH:mm:ss");
 		String formattedDate1 = formatter.format(todaysDate);
-
-		Examples tester = new Examples(false);
-
-	//	tester.testAutomaticTagging();
-		tester.testTermAssignment();
-	//	tester.testIndexingWithWikipedia();
-
+		Examples exampler;
+		
+		if (mode.equals("tagging")) {
+			exampler = new Examples();
+			exampler.testAutomaticTagging();
+		} else if (mode.equals("term_assignment")) {
+			exampler = new Examples();
+			exampler.testTermAssignment();
+		} else if (mode.equals("indexing_with_wikipedia")) {
+			// Access to Wikipedia
+			String server = "localhost";
+			String database = "database";
+			String dataDirectory = "path/to/data/directory";
+			boolean cache = false;
+			 exampler = new Examples(server, database, dataDirectory, cache);
+			 exampler.testIndexingWithWikipedia();
+		}
+		
 		todaysDate = new java.util.Date();
 		String formattedDate2 = formatter.format(todaysDate);
 		System.err.print("Run from " + formattedDate1);
