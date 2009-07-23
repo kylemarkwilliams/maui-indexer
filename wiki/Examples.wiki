@@ -1,0 +1,35 @@
+#summary Topics assigned by Maui to sample documents
+
+= Examples of topic indexing with Maui =
+
+<wiki:toc max_depth="3" />
+
+==Automatic tagging with Maui==
+
+Will be added soon
+
+==Assignment of Wikipedia terms to Computer Science articles==
+
+Will be added soon
+
+==Assignment of Agrovoc terms to English, French and Spanish documents==
+
+Will be added soon
+
+==Indexing with Medical Subject Headings==
+After training on 450 documents from PubMed, Maui assigned MeSH terms like the following. 
+
+Document _Determining lifestyle correlates of body mass index using multilevel analyses_.
+
+|| *assigned by professionals* || *assigned by Maui* ||
+|| Adult<br>Aged<br>Body Mass Index<br>Female<br>Humans<br>Life Style<br>Linear Models<br>Longitudinal Studies<br>Male<br>Middle Aged<br>Norway<br>Obesity<br>Questionnaires<br>Risk Factors<br>Urban Population|| Aged<br>Body Mass Index<br>Cardiovascular Diseases<br>Humans<br>Longitudinal Studies<br>Middle Aged<br>Motor Activity<br>Norway<br>Risk Factors<br>||
+
+==Subject indexing with High Energy Physics thesaurus terms==
+
+Example document from CERN Document server
+_Two-loop electroweak corrections to Higgs production at hadron colliders._
+
+|| *assigned by professionals* || *assigned by Maui* ||
+|| quark: top<br>Higgs mass<br>standard model<br>LHC-B<br>quantum chromodynamic<br>spontaneous symmetry breaking<br>Higgs boson<br>symmetry breaking<br>intermediate boson: mass || quark: top<br>Higgs particle<br>standard model<br>LHC-B<br>quantum chromodynamics<br>cross section<br>Higgs particle: mass<br>hadron: production<br>gluon: fusion<br>boson ||
+
+
