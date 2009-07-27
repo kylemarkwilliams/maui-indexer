@@ -1,4 +1,4 @@
-#summary Quick downloading hints
+#summary Quick downloading tips
 #labels Featured,Phase-Deploy
 
 = Download =
