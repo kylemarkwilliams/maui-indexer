@@ -74,23 +74,36 @@ Once installed, Maui will require the location of the server (e.g. `localhost`),
 
 ==Data preparation==
 
-Follow the examples in the directory _data_, which contains sample documents for training and testing Maui for different tasks. Training means creating a topic indexing model; testing means generating topics for new documents. For example, _data/automatic_tagging_ contains two directories: train and test. The first contains three documents and their manually assigned topics from which Maui creates the model, while the second contains a document for which Maui will compute topics. The topics provided for this document are used for evaluation.
-Each document is stored in a separate file with extension _.txt_, in plain text form. The topics are saved one per line in corresponding _.key_ files; each line may have an optional number that indicates how many people agreed on this topic. Note that the supplied train directories contain very little training data, and are only intended for demonstration and testing purposes. When using Maui, either provide your own training data, or download it from MultiplyIndexedData. Choose a data set that is similar to the one for which topics are to be extracted.
+See also [Usage] 
+
+Follow the examples in the directory _data_, which contains sample documents for training and testing Maui for different tasks. *Training* means creating a topic indexing model; *testing* means generating topics for new documents. 
+
+For example, _data/automatic_tagging_ contains two directories: _train_ and _test_. The first contains three documents and their manually assigned topics from which Maui creates the model, while the second contains a document for which Maui will compute topics. The topics provided for this document are used for evaluation.
+
+Each document is stored in a separate file with extension _.txt_, in plain text form. The topics are saved one per line in corresponding _.key_ files; each line may have an optional number that indicates how many people agreed on this topic. Note that the supplied train directories contain very little training data, and are only intended for demonstration and testing purposes. When using Maui, either provide your own training data, or download it from [MultiplyIndexedData]. Choose a data set that is similar to the one for which topics are to be extracted.
 
 ==Running Maui==
+
+See also [Usage] 
+
 The fastest way to understand how Maui works is to look at the Examples class. Maui can be also applied to new data using MauiModelBuilder and MauiTopicExtractor.
-Examples
+
+===Examples===
+
 The example script `maui.main.Examples` demonstrates how to use Maui for three kinds of topic indexing: tagging, term assignment and indexing with Wikipedia. It can be used as a source of code snippets for a direct access from other programs. It can also be used as a test script to check whether Maui is installed correctly. 
 
-The simplest kind of topic indexing is tagging:
+The simplest kind of topic indexing is *tagging*:
 	`java maui.main.Examples tagging`
 Alternatively, choose `term_assignment` or `indexing_with_wikipedia` as the argument, instead of tagging. The debugging output will show the created model and the generated topics, which will be evaluated against the manually assigned topics stored in the test directories. 
 
-In case of term_assignment, Examples will use the controlled vocabulary `data/vocabularies/agrovoc_sample.rdf`. This is a subset of the original Agrovoc thesaurus, used for demonstration. Appendix G shows where to download the complete Agrovoc vocabulary and where to find other vocabularies in SKOS format.
+In case of *term_assignment*, Examples will use the controlled vocabulary `data/vocabularies/agrovoc_sample.rdf`. This is a subset of the original Agrovoc thesaurus, used for demonstration. [Resources] shows where to download the complete Agrovoc vocabulary and where to find other vocabularies in SKOS format.
 
-In case of indexing_with_wikipedia, Examples will require access to the Wikipedia database, which should be installed as a part of Wikipedia Miner (see Section E.3). Change the parameters accordingly in the main method of Examples and recompile it.
-ModelBuilder and TopicExtractor
-Maui can be applied directly to the document collections in the data directory or to the new collections supplied by the user. In either case, a model needs to be created first using MauiModelBuilder. Then MauiTopicExtractor can be applied to generate topics for new documents.
+In case of *indexing_with_wikipedia*, Examples will require access to the Wikipedia database, which should be installed as a part of [http://www.wikipedia-miner.sourceforge.net Wikipedia Miner]. Change the parameters accordingly in the main method of Examples and recompile it.
+
+
+===!MauiModelBuilder and !MauiTopicExtractor===
+
+Maui can be applied directly to the document collections in the data directory or to the new collections supplied by the user. In either case, a model needs to be created first using !MauiModelBuilder. Then !MauiTopicExtractor can be applied to generate topics for new documents.
 
 For automatic tagging, the directory name and model name are the only required arguments, e.g.:
      `java maui.main.MauiModelBuilder –l data/automatic_tagging/train/ –m test –d`
