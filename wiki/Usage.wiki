@@ -2,6 +2,9 @@
 #labels Featured,Phase-Requirements
 = How to use Maui = 
 
+
+See also: [Installation]
+
 <wiki:toc max_depth="3" />
 
 == Preparing the data ==
