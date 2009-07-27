@@ -1,7 +1,9 @@
+#summary Quick downloading hints
 #labels Featured,Phase-Deploy
-= Download and Installation =
 
-These are (for now) just some minimal instructions on how to use Maui: 
+= Download =
+
+These are just some quick instructions on how to use Maui. For full info see [Installation] and [Usage]. 
 
 Once [http://code.google.com/p/maui-indexer/downloads/list downloaded], look into *maui.main.Examples.java* for examples of how to use Maui. Sample data for different tasks is provided in the package.
 
