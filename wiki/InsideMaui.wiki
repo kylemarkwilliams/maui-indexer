@@ -1,4 +1,6 @@
+#summary General info on how Maui works and its components
 #labels Featured,Phase-Design
+
 = Details about topic indexing with Maui =
 
 This wiki page describes how Maui performs topic indexing.
