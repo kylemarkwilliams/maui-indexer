@@ -1,4 +1,6 @@
 #labels Phase-Requirements,Featured,Phase-Implementation
+#How to install and run Maui
+
 =Installation and running guide for Maui=
 
 <wiki:toc max_depth="3" />
