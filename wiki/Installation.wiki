@@ -1,5 +1,5 @@
 #summary How to install and run Maui
-#labels Phase-Requirements,Featured,Phase-Implementation
+#labels Phase-Requirements,Featured,Phase-Deploy
 
 =Installation and running guide for Maui=
 
