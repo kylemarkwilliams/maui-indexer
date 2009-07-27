@@ -1,5 +1,5 @@
 #summary Additional info on how to prepare data and use Maui
-#labels Featured,Phase-Requirements
+#labels Phase-Deploy,Phase-Requirements
 = How to use Maui = 
 
 
