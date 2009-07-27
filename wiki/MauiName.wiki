@@ -1,4 +1,6 @@
+#summary The legend of Maui
 #labels Featured,Phase-Design
+
 = About Maui's name =
 
 *Maui* is named after the Polynesian mythological hero and demi-god, known in the Māori mythology as [http://en.wikipedia.org/wiki/M%C4%81ui_(M%C4%81ori_mythology) Māui]. 
