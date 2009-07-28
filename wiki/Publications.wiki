@@ -1,0 +1,19 @@
+#summary Academic publications about Maui and techniques it uses
+
+= Publications on Maui =
+
+Maui has been developed by [http://www.medelyan.com Olena Medelyan] as a part of her PhD  under supervision of [http://www.cs.waikato.ac.nz/~ihw Ian H. Witten] and [http://www.cs.waikato.ac.nz/~eibe Eibe Frank].
+ 
+The PhD thesis describes Maui and the research behind it. The submitted although not yet accepted version is available here:
+
+  * O. Medelyan. 2009. _[http://www.cs.waikato.ac.nz/~olena/publications/olena_medelyan_phd_thesis_July2009.pdf Human-competitive automatic topic indexing]_. PhD thesis. [http://www.cs.waikato.ac.nz Department of Computer Science], [http://www.waikato.ac.nz/ University of Waikato], New Zealand.
+ 
+Publications in peer-reviewed venues:
+
+  * O. Medelyan, E. Frank, I. H. Witten. 2009. [http://www.cs.waikato.ac.nz/%7Eolena/publications/emnlp2009_maui.pdf Human-competitive tagging using automatic keyphrase extraction]. To appear in Proc. of the [http://conferences.inf.ed.ac.uk/emnlp09/ Internat. Conference of  Empirical Methods in Natural Language Processing, EMNLP-2009], Singapore.
+
+  * O. Medelyan, I. H. Witten, D. Milne. 2008. [http://www.cs.waikato.ac.nz/%7Eolena/publications/TopicIndexingWithWikipediaWIKIAI08.pdf Topic indexing with Wikipedia]. In Proc. of [http://lit.csci.unt.edu/~wikiai08/index.php/Main_Page Wikipedia and AI workshop] at the AAAI-2008 Conference. Chicago, US.
+
+  * O. Medelyan, I. H. Witten, 2008. [http://www3.interscience.wiley.com/journal/117935647/abstract Domain independent automatic keyphrase indexing with small training sets.] Journal of American Society for Information Science and Technology. Vol. 59 (7), pp. 1026-1040
+
+[http://www.medelyan.com/publications-2 Further related publications.]
