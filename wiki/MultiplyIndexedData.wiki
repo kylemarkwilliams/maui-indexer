@@ -27,10 +27,10 @@ When using this test set, please cite Medelyan (2009) or Medelyan et al. (2008),
 CiteULike-180 is the only test set listed here that was created in natural environments. It has been automatically extracted from the large data set of tags assigned to the bookmarking platform [http://www.citeulike.org CiteULike]. 
 
 The following restrictions were applied to extract this test set:
-  - each tag should be assigned by at least two people
-  - each tagger should have at least two co-tagger
-  - each tagger should have tagged at least three documents
-  - the document should be available for free download
+  * each tag should be assigned by at least two people
+  * each tagger should have at least two co-tagger
+  * each tagger should have tagged at least three documents
+  * the document should be available for free download
 
 The resulting set contains 180 science articles from HighWire and Nature, with tags assigned by 332 voluntary taggers on CiteULike.
 
