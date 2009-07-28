@@ -1,4 +1,4 @@
-#summary Academic publications about Maui and techniques it uses
+#summary Academic publications about Maui and the techniques it uses
 
 = Publications on Maui =
 
