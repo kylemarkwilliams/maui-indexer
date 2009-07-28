@@ -2,7 +2,7 @@
 
 =Multiply indexed data=
 
-This page describes three collections available for download that were used in experiments with Maui. See [Examples] or Medelyan, 2009 ([Publications]) for examples of automatically assigned topics to these documents by Maui.
+This page describes three collections available for download that were used in experiments with Maui. See [Examples] or Medelyan, 2009 ([Publications]) for examples of topics automatically assigned to these documents by Maui.
 
 Unlike collections with just one topic set per document (some are listed in [Resources]), these three collections contain topic sets assigned to each document by different people. This allows to measure the agreement between the people, which provides a direct comparison to the performance of the algorithm.
 
