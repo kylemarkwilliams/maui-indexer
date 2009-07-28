@@ -50,7 +50,7 @@ Given two topic sets:
   * _complex systems, network, small world_
   * _theoretical, small world, networks, dynamics_
 
-The intersection, or the set of matching terms (after stemming) is 
+The intersection, or the set of topics the two sets have in common (after stemming) is 
 
   * _network, small world_
 
