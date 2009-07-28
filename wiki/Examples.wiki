@@ -14,12 +14,13 @@ Here are three examples of different performance levels. Numbers in brackets ind
 
 *Excellent performance* (F-Measure 80%). [http://www.citeulike.org/article/101973 Different time courses of learning-related activity in the prefrontal cortex and striatum]
 
-<table border=1 width=50%>
+<table border=1>
 <tr>
-<td valign=top>*At least two taggers*</td>
-<td valign=top>*One tagger*</td>
-<td valign=top>*Maui*</td>
+<td>*At least two taggers*</td>
+<td>*One tagger*</td>
+<td>*Maui*</td>
 </tr>
+
 <tr>
 
 <td valign=top>
@@ -45,16 +46,17 @@ striatothalamocortical
 *prefrontal cortex*<br></br>
 _basal ganglia_
 </td>
+
 </tr>
 </table>
 
 *Average performance* (F-Measure 46%). [http://www.citeulike.org/article/1322886 Global and regional drivers of accelerating CO2 emissions]
 
-<table border=1 width=50%>
+<table border=1>
 <tr>
-<td valign=top>*At least two taggers*</td>
-<td valign=top>*One tagger*</td>
-<td valign=top>*Maui*</td>
+<td>*At least two taggers*</td>
+<td>*One tagger*</td>
+<td>*Maui*</td>
 </tr>
 <tr>
 
@@ -86,11 +88,11 @@ energy
 
 *Poor performance* (F-Measure 0%). [http://www.citeulike.org/article/1272477 Drought sensitivity shapes species distribution patterns in tropical forests.]
 
-<table border=1 width=50%>
+<table border=1>
 <tr>
-<td valign=top>*At least two taggers*</td>
-<td valign=top>*One tagger*</td>
-<td valign=top>*Maui*</td>
+<td>*At least two taggers*</td>
+<td>*One tagger*</td>
+<td>*Maui*</td>
 </tr>
 <tr>
 
