@@ -223,7 +223,7 @@ Graphics (0)
 
 <hr>
 
-==Assignment of Agrovoc terms to English, French and Spanish documents==
+==Assignment of Agrovoc terms to agricultural documents==
 
 These experiments resulted from the collaboration with the [http://www.fao.org Food and Agriculture Organization (FAO) of the United Nations]. Each document is automatically indexed with terms from the domain-specific thesaurus [http://www.fao.org/agrovoc Agrovoc]. The results are compared to those assigned by professionals.
 
@@ -241,10 +241,10 @@ Document _The dynamics of sanitary and technical requirement assisting the poor_
 <table  border=1>
 <tr>
 <td>
-Topics by 6 professionals indexers
+*Topics by 6 professional indexers*
 </td>
 <td>
-Topics assigned by Maui
+*Topics assigned by Maui*
 </td>
 </tr>
 <tr>
@@ -276,11 +276,16 @@ Document _Climate change and the forest sector_
 
 <table  border=1>
 <tr>
-<td>Topics by 6 professionals indexers	Topics assigned by Maui
+<td>
+*Topics by 6 professional indexers*
+</td>
+<td>
+*Topics assigned by Maui*
 </td>
 </tr>
 <tr>
-<td>Climatic change (6)<br></br>
+<td>
+Climatic change (6)<br></br>
 International agreements (5)<br></br>
 Forests (4)<br></br>
 Greenhouse effect (4)<br></br>
@@ -306,7 +311,11 @@ Document _Phosphorus limitation of microbial processes in tropical forests_
 
 <table  border=1>
 <tr>
-<td>Topics by 6 professionals indexers	Topics assigned by Maui
+<td>
+*Topics by 6 professional indexers*
+</td>
+<td>
+*Topics assigned by Maui*
 </td>
 </tr>
 <tr>
@@ -327,6 +336,83 @@ Rain forests (0)<br></br>
 Primary productivity (0)<br></br>
 Forests (0)<br></br>
 Soil (0)
+</td>
+</tr>
+</table>
+
+<br></br>
+
+===French and Spanish agricultural documents===
+
+After training on 66 French and 46 Spanish documents, no modification to code other than a new stemmer, stopwords list and encoding. Matching terms are shown in bold. 
+
+French document _Relations terres-eau dans les bassins versant ruraux_.
+ 
+<table  border=1>
+<tr>
+<td>*Topics by professionals*</td>
+<td>*Topics assigned by Maui*
+</td>
+</tr>
+<tr>
+<td>*Impact sur l'environnement*<br></br>
+*Ressource en eau*<br></br>
+*Utilisation des terres*<br></br>
+Aménagement de bassin versant<br></br>
+Conservation de l'eau<br></br>
+Qualité de l'eau<br></br>
+Utilisation de l'eau<br></br>
+Réglementation<br></br>
+Eau de ruissellement<br></br>
+Développement rural<br></br>
+Organisation socioéconomique
+</td><td valign=top>
+*Impact sur l'environnement*<br></br>
+*Ressource en eau*<br></br>
+*Utilisation des terres*<br></br>
+Bassin versant<br></br>
+Pollution de l'eau <br></br>
+Changement climatique<br></br>
+Pollution atmosphérique<br></br>
+Pollution par l'agriculture<br></br>
+Étude de cas<br></br>
+Métal lourd
+</td>
+</tr>
+</table>
+
+
+
+Spanish document _Evaluación de los recursos forestales mundiales 2000 _.
+ 
+<table  border=1>
+<tr>
+<td>*Topics by professionals*</td>
+<td>*Topics assigned by Maui*
+</td>
+</tr>
+<tr>
+<td valign=top>*Ordenación forestal*<br></br>
+*Plantación forestal*<br></br>
+*Productos forestales*<br></br>
+*Recursos forestales*<br></br>
+Ciencias forestales<br></br>
+Reforestación<br></br>
+Sostenibilidad<br></br>
+Transferencia de tecnología<br></br>
+
+</td><td valign=top>
+*Ordenación forestal*<br></br>
+*Plantación forestal*<br></br>
+*Productos forestales*<br></br>
+*Recursos forestales*<br></br>
+Inventarios forestales<br></br>
+Tierras forestales<br></br>
+Bosques <br></br>
+Biodiversidad<br></br>
+Utilización de la tierra<br></br>
+Muestra<br></br>
+
 </td>
 </tr>
 </table>
