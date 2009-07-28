@@ -6,7 +6,7 @@ This page describes three collections available for download that were used in e
 
 Unlike collections with just one topic set per document, listed in [Resources], these three collections contain topic sets assigned to each document by different people. This allows to measure the agreement between the people, which provides a direct comparison to the performance of the algorithm.
 
-==FAO-30== 
+==FAO-30 data set for term assignment== 
 
 FAO-30 is a test set containing 30 agricultural documents, each indexed with terms from [http://www.fao.org/agrovoc Agrovoc] by 6 professional indexers at the [http://www.fao.org Food and Agriculture Organization of the UN].
 
@@ -14,7 +14,7 @@ FAO-30 is a test set containing 30 agricultural documents, each indexed with ter
 
 When using this test set, please cite Medelyan (2009) or Medelyan and Witten (2008), see [Publications]. 
 
-==WIKI-20==
+==WIKI-20 data set for topic indexing with Wikipedia==
 
 WIKI-20 is a test set with 20 computer science technical reports, each indexed with terms from [http://www.wikipedia.org Wikipedia] by 15 teams of computer science graduate and undergraduate students. The test set was created in an indexing competition, which ensured high quality of assigned topics. 
 
@@ -22,7 +22,7 @@ WIKI-20 is a test set with 20 computer science technical reports, each indexed w
 
 When using this test set, please cite Medelyan (2009) or Medelyan et al. (2008), see [Publications]. 
 
-==CiteULike==
+==CiteULike-180 data set for automatic tagging==
 
 CiteULike-180 is the only test set listed here that was created in natural environments. It has been automatically extracted from the large data set of tags assigned to the bookmarking platform [http://www.citeulike.org CiteULike]. 
 
