@@ -14,6 +14,6 @@ Publications in peer-reviewed venues:
 
   * O. Medelyan, I. H. Witten, D. Milne. 2008. [http://www.cs.waikato.ac.nz/%7Eolena/publications/TopicIndexingWithWikipediaWIKIAI08.pdf Topic indexing with Wikipedia]. In Proc. of [http://lit.csci.unt.edu/~wikiai08/index.php/Main_Page Wikipedia and AI workshop] at the AAAI-2008 Conference. Chicago, US.
 
-  * O. Medelyan, I. H. Witten, 2008. [http://www3.interscience.wiley.com/journal/117935647/abstract Domain independent automatic keyphrase indexing with small training sets.] Journal of American Society for Information Science and Technology. Vol. 59 (7), pp. 1026-1040
+  * O. Medelyan, I. H. Witten, 2008. [http://www3.interscience.wiley.com/journal/117935647/abstract Domain independent automatic keyphrase indexing with small training sets.] Journal of American Society for Information Science and Technology. Vol. 59 (7), pp. 1026-1040.
 
 [http://www.medelyan.com/publications-2 Further related publications.]
