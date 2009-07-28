@@ -225,8 +225,111 @@ Graphics (0)
 
 ==Assignment of Agrovoc terms to English, French and Spanish documents==
 
-Will be added soon
+These experiments resulted from the collaboration with the [http://www.fao.org Food and Agriculture Organization (FAO) of the United Nations]. Each document is automatically indexed with terms from the domain-specific thesaurus [http://www.fao.org/agrovoc Agrovoc]. The results are compared to those assigned by professionals.
 
+===English agricultural documents===
+
+Six professional indexers at FAO indexed 30 documents each. Using consistency measure, we computed the agreement among the indexers and their agreement with Maui. Maui's consistency is only slightly worse than the consistency of professionals.
+
+Here are examples of three performance levels that Maui achieved:
+  
+
+*Excellent performance.* Maui 51% vs. Indexers 40%
+
+Document _The dynamics of sanitary and technical requirement assisting the poor_
+
+<table  border=1>
+<tr>
+<td>
+Topics by 6 professionals indexers
+</td>
+<td>
+Topics assigned by Maui
+</td>
+</tr>
+<tr>
+<td>
+Food safety (5)<br></br>
+Livestock (5)<br></br>
+Standards (5)<br></br>
+Poverty (5)<br></br>
+Developing countries (4)<br></br>
+Food chains (4)<br></br>
+Phytosanitary measures (4)<br></br>
+Animal production (2)
+</td><td>Food safety (5)<br></br>
+Livestock (5)<br></br>
+Standards (5)<br></br>
+Developing countries (4)<br></br>
+Food chains (4)<br></br>
+Animal health (2)<br></br>
+FAO (2)<br></br>
+Risk management (2)
+</td>
+</tr>
+</table>
+
+	
+*Average performance.* Maui 29% vs. Indexers 35%
+
+Document _Climate change and the forest sector_
+
+<table  border=1>
+<tr>
+<td>Topics by 6 professionals indexers	Topics assigned by Maui
+</td>
+</tr>
+<tr>
+<td>Climatic change (6)<br></br>
+International agreements (5)<br></br>
+Forests (4)<br></br>
+Greenhouse effect (4)<br></br>
+Legislation (4)<br></br>
+Forestry policies (4)<br></br>
+Pollution control (4)<br></br>
+Greenhouse gases (3)</td><td>Climatic change (6)<br></br>
+Forests (4)<br></br>
+Greenhouse gases (3)<br></br>
+Forest management (3)<br></br>
+Property (0)<br></br>
+Climate (0)<br></br>
+Land use (0)<br></br>
+Forest products (0)
+</td>
+</tr>
+</table>
+
+	
+*Poor performance.* Maui 7% vs. Indexers 35%
+
+Document _Phosphorus limitation of microbial processes in tropical forests_
+
+<table  border=1>
+<tr>
+<td>Topics by 6 professionals indexers	Topics assigned by Maui
+</td>
+</tr>
+<tr>
+<td>Tropical rain forests (6)<br></br>
+Phosphorus (6)<br></br>
+Soil chemicophysical properties (3)<br></br>
+Soil fertility (3)<br></br>
+Soil microorganisms (3)<br></br>
+Soil biology (2)<br></br>
+Microorganisms (2)<br></br>
+Biodegradation (2)
+</td><td>
+Carbon (2)<br></br>
+Costa Rica (2)<br></br>
+Tropical forests (0)<br></br>
+Respiration (0)<br></br>
+Rain forests (0)<br></br>
+Primary productivity (0)<br></br>
+Forests (0)<br></br>
+Soil (0)
+</td>
+</tr>
+</table>
 
 
 <hr>
