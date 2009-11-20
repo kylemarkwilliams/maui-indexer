@@ -14,17 +14,17 @@ public class VocabularyFactory {
 		VocabularyFactory.vocabulary = vocabulary;
 	}
 
-	public static Vocabulary getVocabulary(VocabularyStore store) {
+	public static Vocabulary getVocabulary() {
 		if (vocabulary == JENA)
 			try {
-				return new VocabularyJena(store);
+				return new VocabularyJena();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
 		else if(vocabulary == SESAME) {
 			try {
-				return new VocabularySesame(store);
+				return new VocabularySesame();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -33,7 +33,7 @@ public class VocabularyFactory {
 		
 		else if(vocabulary == TEXT) {
 			try {
-				return new VocabularyText(store);
+				return new VocabularyText();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

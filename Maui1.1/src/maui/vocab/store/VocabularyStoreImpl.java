@@ -22,6 +22,10 @@ public class VocabularyStoreImpl implements VocabularyStore {
 	private String name;
 	private String sesameStore;
 
+	private NativeStore store;
+	private Repository repository;
+	private SesameManagerFactory factory;
+
 	public VocabularyStoreImpl(String propertiesFile) {
 		Properties properties = new Properties();
 		try {
@@ -29,11 +33,13 @@ public class VocabularyStoreImpl implements VocabularyStore {
 			properties.load(fis);
 			this.RDFFile = properties.getProperty("rdf");
 			this.sesameStore = properties.getProperty("sesameStore");
+			String activateSesameStore = properties.getProperty("activateSesameStore");
+			Boolean activeSesame = new Boolean(activateSesameStore);
 			this.format = properties.getProperty("format");
 			this.name = properties.getProperty("name");
-			if(this.sesameStore!=null)
+			if (this.sesameStore != null && activeSesame==true)
 				this.initSesameRepository();
-			
+
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -42,10 +48,10 @@ public class VocabularyStoreImpl implements VocabularyStore {
 			e.printStackTrace();
 		}
 	}
-	
+
 	private void initSesameRepository() {
-		NativeStore store = new NativeStore(new File(this.sesameStore));
-		Repository repository = new SailRepository(store);
+		this.store = new NativeStore(new File(this.sesameStore));
+		this.repository = new SailRepository(store);
 		try {
 			repository.initialize();
 		} catch (RepositoryException e) {
@@ -53,7 +59,7 @@ public class VocabularyStoreImpl implements VocabularyStore {
 			e.printStackTrace();
 		}
 		ElmoModule module = new ElmoModule();
-		SesameManagerFactory factory = new SesameManagerFactory(module, repository);
+		this.factory = new SesameManagerFactory(module, repository);
 		this.manager = factory.createElmoManager();
 	}
 
@@ -84,6 +90,22 @@ public class VocabularyStoreImpl implements VocabularyStore {
 	@Override
 	public String getStore() {
 		return this.sesameStore;
+	}
+
+	public void close() {
+		if (this.manager != null) {
+			this.manager.close();
+			System.out.println("Manager closed OK");
+			this.factory.close();
+			System.out.println("Factory  closed OK");
+			try {
+				this.repository.shutDown();
+				System.out.println("Repository closed OK");
+			} catch (RepositoryException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+		}
 	}
 
 }

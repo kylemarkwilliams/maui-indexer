@@ -114,18 +114,18 @@ public class VocabularyJena implements Vocabulary, Serializable {
 	 *            The format of the vocabulary (skos or text).
 	 * @throws Exception
 	 * */
-	public VocabularyJena(VocabularyStore store) throws Exception {
+	public VocabularyJena() throws Exception {
 
-		this.vocabularyFormat = store.getVocabularyFormat();
+//		this.vocabularyFormat = store.getVocabularyFormat();
 
 //		SKOS = new File("data/vocabularies/" + store.getVocabularyName()
 //				+ ".rdf");
 //		if (!SKOS.exists())
 //			throw new Exception("File data/vocabularies/"
 //					+ store.getVocabularyName() + ".rdf does not exist.");
-		SKOS = new File(store.getRDFFile());
-		if (!SKOS.exists())
-			throw new Exception(store.getRDFFile() + " does not exist.");
+//		SKOS = new File(store.getRDFFile());
+//		if (!SKOS.exists())
+//			throw new Exception(store.getRDFFile() + " does not exist.");
 
 	}
 
@@ -166,8 +166,8 @@ public class VocabularyJena implements Vocabulary, Serializable {
 	 * 
 	 */
 	@Override
-	public void initialize() throws Exception {
-		buildSKOS();
+	public void initialize(VocabularyStore store) throws Exception {
+		buildSKOS(store);
 	}
 
 	/**
@@ -183,8 +183,12 @@ public class VocabularyJena implements Vocabulary, Serializable {
 	/**
 	 * Builds the vocabulary indexes from SKOS file.
 	 */
-	private void buildSKOS() throws Exception {
-
+	private void buildSKOS(VocabularyStore store) throws Exception {
+		
+		SKOS = new File(store.getRDFFile());
+		if (!SKOS.exists())
+			throw new Exception(store.getRDFFile() + " does not exist.");
+		
 		if (debugMode) {
 			System.err
 					.println("--- Building the Vocabulary index from the SKOS file...");

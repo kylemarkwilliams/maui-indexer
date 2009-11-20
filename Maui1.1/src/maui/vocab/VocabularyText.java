@@ -35,7 +35,7 @@ public class VocabularyText implements Vocabulary {
 
 	/** id --> list of related ids */
 	private HashMap<String, Vector<String>> listsOfRelatedTerms = null;
-	
+
 	/** id-relatedId --> relation */
 	private HashMap<String, String> relationIndex = null;
 
@@ -64,12 +64,21 @@ public class VocabularyText implements Vocabulary {
 
 	/** reverse index : id --> descriptor */
 	private HashMap<String, String> idTermIndex;
-	
+
 	/** normalized descriptor --> list of all possible meanings */
 	private HashMap<String, Vector<String>> listsOfSenses;
-	
 
-	public VocabularyText(VocabularyStore store) {
+	public VocabularyText() {
+	}
+
+	/**
+	 * Starts initialization of the vocabulary.
+	 * 
+	 * @throws Exception
+	 * 
+	 */
+	@Override
+	public void initialize(VocabularyStore store) throws Exception {
 		EN = new File("data/vocabularies/" + store.getVocabularyName() + ".en");
 		USE = new File("data/vocabularies/" + store.getVocabularyName()
 				+ ".use");
@@ -102,17 +111,6 @@ public class VocabularyText implements Vocabulary {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-
-	}
-
-	/**
-	 * Starts initialization of the vocabulary.
-	 * 
-	 * @throws Exception
-	 * 
-	 */
-	@Override
-	public void initialize() throws Exception {
 		buildTEXT();
 		buildUSE();
 		buildREL();
