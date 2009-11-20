@@ -191,6 +191,7 @@ public class Examples {
 		topicExtractor.loadModel();
 		fileNames = topicExtractor.collectStems();
 		topicExtractor.extractKeyphrases(fileNames, store);
+		store.close();
 	}
 
 	/**
@@ -239,7 +240,7 @@ public class Examples {
 		topicExtractor.loadModel();
 		fileNames = topicExtractor.collectStems();
 		topicExtractor.extractKeyphrases(fileNames, store);
-		
+		store.close();
 	}
 
 	/**
@@ -275,7 +276,8 @@ public class Examples {
 		VocabularyStore store = new VocabularyStoreImpl(CONFIG_FILE);
 		modelBuilder.buildModel(fileNames, store);
 		modelBuilder.saveModel();
-
+		store.close();
+		
 //		// Settings for topic extractor
 //		topicExtractor.setDirName(testDir);
 //		topicExtractor.setModelName(modelName);

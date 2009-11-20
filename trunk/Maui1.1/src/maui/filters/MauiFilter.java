@@ -469,12 +469,12 @@ public class MauiFilter extends Filter {
 				System.err.println("--- Loading the vocabulary...");
 			}
 			VocabularyFactory.selectVocabulary(VocabularyFactory.JENA);//TODO
-			vocabulary = VocabularyFactory.getVocabulary(store);
+			vocabulary = VocabularyFactory.getVocabulary();
 			vocabulary.setStemmer(stemmer);
 			vocabulary.setStopwords(stopwords);
 			vocabulary.setDebug(debugMode);
 			vocabulary.setLanguage(documentLanguage);
-			vocabulary.initialize();
+			vocabulary.initialize(store);
 			
 		} catch (Exception e) {
 			System.err.println("Failed to load thesaurus!");

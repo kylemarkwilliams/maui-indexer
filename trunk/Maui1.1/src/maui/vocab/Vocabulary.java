@@ -4,6 +4,7 @@ import java.util.Vector;
 
 import maui.stemmers.Stemmer;
 import maui.stopwords.Stopwords;
+import maui.vocab.store.VocabularyStore;
 
 public interface Vocabulary {
 	
@@ -24,7 +25,7 @@ public interface Vocabulary {
 	 * @throws Exception 
 	 *
 	 */
-	public void initialize() throws Exception;
+	public void initialize(VocabularyStore store) throws Exception;
 
 	/**
 	 * Set the stopwords class.

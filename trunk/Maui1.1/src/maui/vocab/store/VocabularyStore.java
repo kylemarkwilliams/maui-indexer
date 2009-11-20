@@ -9,5 +9,6 @@ public interface VocabularyStore {
 	public String getVocabularyName();
 	public String getVocabularyFormat();
 	public String getStore();
+	public void close();
 
 }
