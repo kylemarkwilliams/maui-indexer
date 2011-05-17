@@ -30,6 +30,11 @@ For term assignment, a number of vocabularies in SKOS format are available on th
 
   * [http://id.loc.gov/authorities/search/ Library of Congress Subject Headings LSCH]
   * [http://thesauri.cs.vu.nl/eswc06/mesh/rdf/meshdata.rdf Medical Subject Headings thesaurus MeSH]
+
+Please note:
+Maui user [http://groups.google.com/group/kea-and-maui-support/browse_thread/thread/d290b81c653249e2# Amrita] recommends to use [http://code.google.com/p/hive-mrc/
+wiki/MeshToSKOS HIVE to convert original MeSH vocabulary into SKOS].
+
   * FAO’s agricultural thesaurus Agrovoc: [http://www.fao.org/agrovoc/ general info] and [http://aims.fao.org/en/website/Download/sub download site].
   * [http://aims.fao.org/en/website/Knowledge-Organization-Systems-%28KOS%29/sub List of other SKOS thesauri at FAO]
   * [http://invenio-demo.cern.ch/help/hacking/bibclassify-hep-taxonomy DESY’s High Energy Physics HEP thesaurus]
