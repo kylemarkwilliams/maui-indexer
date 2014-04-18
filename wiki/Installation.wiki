@@ -7,11 +7,11 @@
 
 ==Download==
  
-Select the “Downloads” tab. When installing Maui for the first time, choose the archive file maui_1.1_with_libs.tar.gz for download. Move the archive file to the preferred installation directory and extract its contents. In a shell (e.g. Terminal on Mac) this can be done with the following command:  
+Select the “Downloads” tab. When installing Maui for the first time, choose the archive file maui1.2_all-incl.tar.gz for download. Move the archive file to the preferred installation directory and extract its contents. In a shell (e.g. Terminal on Mac) this can be done with the following command:  
 
-	`gzip –dc maui_1.1_with_libs.tar.gz | tar xf –`
+	`gzip –dc maui1.2_all-incl.tar.gz | tar xf –`
 
-The extracted directory Maui1.0 contains the following subdirectories: 
+The extracted directory Maui1.2 contains the following subdirectories: 
   * data – stopwords, vocabularies and test documents for different tasks
   * lib – required jar libraries
   * src – source code
@@ -32,36 +32,39 @@ Make sure that the correct JRE System Library is used. If JVM Java 1.5.0. is not
 
 If everything is done correctly, Eclipse will automatically compile Maui without error messages. Now the main class files can be run by clicking on them in the maui.main package and opening Run --> “Open Run Dialogue…”. In the Arguments tab, Program arguments window, set the options as described in Section E.5. In the VM arguments window, if necessary, increase the size of memory: `–Xmx1200m`. 
 
-===Set up Maui in a shell===
+===Run Maui in a shell===
 
-Set `MAUIHOME` to the directory Maui1.0, using the full path address, e.g.:
+1.  Compile the MauiModelBuilder:
 
-  * for bash, bourne and related shells:
-	
-	`export MAUIHOME = /Users/Shared/Olena/Maui1.0`
+{{{Maui1.2 zelandiya$ javac -cp "lib/*:src" src/maui/main/MauiModelBuilder.java}}}
 
-  * for csh and related shells:
-	
-	`setenv MAUIHOME /Users/Shared/Olena/Maui1.0`
+2. Run the MauiModelBuilder (set the options accordingly, I have used tagging in this example):
 
-  * for DOS and Windows shells
-	
-	`set MAUIHOME = C:\Maui1.0`
+{{{Maui1.2 zelandiya$ java -cp "lib/*:src" maui.main.MauiModelBuilder -l data/automatic_tagging/train/ -m test -v none
+-- Building the model... 
+-- Reading the input documents... 
+Done!}}}
 
-Set `$MAUIHOME` to the `CLASSPATH` environment variable. Example:
+3. Compile the MauiTopicExtractor
 
-	`export CLASSPATH=$CLASSPATH:$MAUIHOME`
+{{{Maui1.2 zelandiya$ javac -cp "lib/*:src" src/maui/main/MauiTopicExtractor.java}}}
 
-Add src directory and all jar files in the lib directory to `CLASSPATH`. Example:
+4. Run the MauiTopicExtractor
 
-	`export CLASSPATH=$CLASSPATH:$MAUIHOME/src
-	`export CLASSPATH=$CLASSPATH:$MAUIHOME/lib/jena.jar
+{{{Maui1.2 zelandiya$ java -cp "lib/*:src" maui.main.MauiTopicExtractor -l data/automatic_tagging/test/ -m test -v none
+Extracting keyphrases with options: -l data/automatic_tagging/test/ -m test -v none -f null -e default -i en -n 10 -t maui.stemmers.PorterStemmer -s maui.stopwords.StopwordsEnglish     
+-- Loading the model... 
+-- Extracting keyphrases... 
 
-If everything is set up correctly, compiling the following scripts should not return any error messages:
+-- Evaluation results based on 1 document:
+Avg. number of correct keyphrases per document: 4 +/- 0
+Precision: 40 +/- 0
+Recall: 66.67 +/- 0
+F-Measure: 50
+}}}
 
-	`javac src/maui/main/Examples.java`
-	`javac src/maui/main/MauiModelBuilder.java`
-	`javac src/maui/main/MauiTopicExtractor.java` 
+This did not generate any new files, because the test directory already contains "*.key" files but if you run it on a directory with just the documents, it will generate a list of keywords for each document.
+
 
 ==Wikipedia Miner installation (optional)==
 
@@ -105,6 +108,8 @@ In case of *indexing_with_wikipedia*, Examples will require access to the Wikipe
 
 Maui can be applied directly to the document collections in the data directory or to the new collections supplied by the user. In either case, a model needs to be created first using !MauiModelBuilder. Then !MauiTopicExtractor can be applied to generate topics for new documents.
 
+The examples below assume that the Java CLASSPATH is set up to access all required libraries.
+
 For automatic tagging, the directory name and model name are the only required arguments, e.g.:
      `java maui.main.MauiModelBuilder –l data/automatic_tagging/train/ –m test –d`
      `java maui.main.MauiTopicExtractor –l data/automatic_tagging/test/ –m test –d`
@@ -121,6 +126,4 @@ For topic indexing with Wikipedia, the vocabulary should be set to wikipedia and
 
      `java maui.main.MauiTopicExtractor –l data/wikipedia_indexing/test/ –m indexing_model –v wikipedia –w enwiki@localhost`
 
-Installation problems and usage questios can be added under "Issues" tab. 
-
-Or email me: medelyan at gmail 
+Installation problems and usage questions? Post on [https://groups.google.com/forum/#!forum/kea-and-maui-support Maui User Group]
