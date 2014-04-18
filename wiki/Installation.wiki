@@ -17,13 +17,11 @@ The extracted directory Maui1.2 contains the following subdirectories:
   * src – source code
   * doc – Javadoc documentation
 
-==Set up==
-
 Maui is written in Java 5.0. Before running the main classes, they need to be compiled. There are two choices for doing this:
   # Use an IDE (integrated development environment) like [http://www.eclipse.org Eclipse]. 
   # Use command line scripts in a shell, e.g. Terminal, Xterm, C shell.
 
-===Set up Maui in Eclipse===
+==Using Maui in Eclipse==
 Import the project into the workspace: File --> Import, then follow the instructions. Make sure that all jar files in the lib directory are added to the build path: 
 
 Project --> Properties --> Java Build Path --> “Libraries” tab --> “Add jars…” 
@@ -32,26 +30,36 @@ Make sure that the correct JRE System Library is used. If JVM Java 1.5.0. is not
 
 If everything is done correctly, Eclipse will automatically compile Maui without error messages. Now the main class files can be run by clicking on them in the maui.main package and opening Run --> “Open Run Dialogue…”. In the Arguments tab, Program arguments window, set the options as described in Section E.5. In the VM arguments window, if necessary, increase the size of memory: `–Xmx1200m`. 
 
-===Run Maui in a shell===
+==Using Maui in a shell==
 
-1.  Compile the MauiModelBuilder:
+You can either set up Java CLASSPATH to include all libraries required to run Maui, or use the following commands:
 
-{{{Maui1.2 zelandiya$ javac -cp "lib/*:src" src/maui/main/MauiModelBuilder.java}}}
+1.  Compile the !MauiModelBuilder:
 
-2. Run the MauiModelBuilder (set the options accordingly, I have used tagging in this example):
+{{{
+Maui1.2 zelandiya$ javac -cp "lib/*:src" src/maui/main/MauiModelBuilder.java
+}}}
 
-{{{Maui1.2 zelandiya$ java -cp "lib/*:src" maui.main.MauiModelBuilder -l data/automatic_tagging/train/ -m test -v none
--- Building the model... 
--- Reading the input documents... 
-Done!}}}
+2. Run the !MauiModelBuilder (set the options accordingly, I have used tagging in this example):
 
-3. Compile the MauiTopicExtractor
+{{{
+Maui1.2 zelandiya$ java -cp "lib/*:src" maui.main.MauiModelBuilder -l data/automatic_tagging/train/ -m test -v none`
 
-{{{Maui1.2 zelandiya$ javac -cp "lib/*:src" src/maui/main/MauiTopicExtractor.java}}}
+-- Building the model...
+-- Reading the input documents...
+Done!
+}}}
 
-4. Run the MauiTopicExtractor
+3. Compile the !MauiTopicExtractor
 
-{{{Maui1.2 zelandiya$ java -cp "lib/*:src" maui.main.MauiTopicExtractor -l data/automatic_tagging/test/ -m test -v none
+{{{
+Maui1.2 zelandiya$ javac -cp "lib/*:src" src/maui/main/MauiTopicExtractor.java
+}}}
+
+4. Run the !MauiTopicExtractor
+
+{{{
+Maui1.2 zelandiya$ java -cp "lib/*:src" maui.main.MauiTopicExtractor -l data/automatic_tagging/test/ -m test -v none
 Extracting keyphrases with options: -l data/automatic_tagging/test/ -m test -v none -f null -e default -i en -n 10 -t maui.stemmers.PorterStemmer -s maui.stopwords.StopwordsEnglish     
 -- Loading the model... 
 -- Extracting keyphrases... 
@@ -63,17 +71,9 @@ Recall: 66.67 +/- 0
 F-Measure: 50
 }}}
 
-This did not generate any new files, because the test directory already contains "*.key" files but if you run it on a directory with just the documents, it will generate a list of keywords for each document.
+This did not generate any new files, because the test directory already contains _.key_ files but if you run it on a directory with just the documents, it will generate a list of keywords for each document.
 
-
-==Wikipedia Miner installation (optional)==
-
-[http://www.wikipedia-miner.sourceforge.net Wikipedia Miner] is required for topic indexing with Wikipedia. It is also used for computing encyclopedic features in other tasks, although this is optional. 
-
-  # [https://sourceforge.net/projects/wikipedia-miner/files/ Download the package and the data]. 
-  # Follow the installation guide in the readme file distributed with the package. 
-
-Once installed, Maui will require the location of the server (e.g. `localhost`), the name of the database containing Wikipedia data (e.g. `en_20090306`), and, optionally, the name of the directory with cvs files containing Wikipedia data, which Wikipedia Miner loads into memory for quick access. The latter is advisable if many documents are processed at a time. It requires approximately 3MB RAM. 
+Installation problems and usage questions? Post on [https://groups.google.com/forum/#!forum/kea-and-maui-support Maui User Group]
 
 ==Data preparation==
 
@@ -85,13 +85,12 @@ For example, _data/automatic_tagging_ contains two directories: _train_ and _tes
 
 Each document is stored in a separate file with extension _.txt_, in plain text form. The topics are saved one per line in corresponding _.key_ files; each line may have an optional number that indicates how many people agreed on this topic. Note that the supplied train directories contain very little training data, and are only intended for demonstration and testing purposes. When using Maui, either provide your own training data, or download it from [MultiplyIndexedData]. Choose a data set that is similar to the one for which topics are to be extracted.
 
-==Running Maui==
+
+==Examples==
 
 See also [Usage] 
 
 The fastest way to understand how Maui works is to look at the Examples class. Maui can be also applied to new data using MauiModelBuilder and MauiTopicExtractor.
-
-===Examples===
 
 The example script `maui.main.Examples` demonstrates how to use Maui for three kinds of topic indexing: tagging, term assignment and indexing with Wikipedia. It can be used as a source of code snippets for a direct access from other programs. It can also be used as a test script to check whether Maui is installed correctly. 
 
@@ -102,9 +101,6 @@ Alternatively, choose `term_assignment` or `indexing_with_wikipedia` as the argu
 In case of *term_assignment*, Examples will use the controlled vocabulary `data/vocabularies/agrovoc_sample.rdf`. This is a subset of the original Agrovoc thesaurus, used for demonstration. [Resources] shows where to download the complete Agrovoc vocabulary and where to find other vocabularies in SKOS format.
 
 In case of *indexing_with_wikipedia*, Examples will require access to the Wikipedia database, which should be installed as a part of [http://www.wikipedia-miner.sourceforge.net Wikipedia Miner]. Change the parameters accordingly in the main method of Examples and recompile it.
-
-
-===!MauiModelBuilder and !MauiTopicExtractor===
 
 Maui can be applied directly to the document collections in the data directory or to the new collections supplied by the user. In either case, a model needs to be created first using !MauiModelBuilder. Then !MauiTopicExtractor can be applied to generate topics for new documents.
 
@@ -126,4 +122,12 @@ For topic indexing with Wikipedia, the vocabulary should be set to wikipedia and
 
      `java maui.main.MauiTopicExtractor –l data/wikipedia_indexing/test/ –m indexing_model –v wikipedia –w enwiki@localhost`
 
-Installation problems and usage questions? Post on [https://groups.google.com/forum/#!forum/kea-and-maui-support Maui User Group]
+==Wikipedia Miner installation (optional)==
+
+[http://www.wikipedia-miner.sourceforge.net Wikipedia Miner] is required for topic indexing with Wikipedia. It is also used for computing encyclopedic features in other tasks, although this is optional. 
+
+  # [https://sourceforge.net/projects/wikipedia-miner/files/ Download the package and the data]. 
+  # Follow the installation guide in the readme file distributed with the package. 
+
+Once installed, Maui will require the location of the server (e.g. `localhost`), the name of the database containing Wikipedia data (e.g. `en_20090306`), and, optionally, the name of the directory with cvs files containing Wikipedia data, which Wikipedia Miner loads into memory for quick access. The latter is advisable if many documents are processed at a time. It requires approximately 3MB RAM. 
+
